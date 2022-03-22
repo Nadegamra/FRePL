@@ -10,8 +10,7 @@ Simas Markevičius IFF-0/9
 
 Vilhelmas Stankevičius IFF-0/9
 
-
-
+/
 
 Pasirinkti darbo įrankiai
 
@@ -19,7 +18,7 @@ Kompiliatoriaus kalba: C++
 
 Kompiliatoriaus kompiliatorius: GCC
 
-
+/
 
 Bendras kalbos aprašymas:
 
@@ -29,8 +28,7 @@ Palaikomos struktūros: sąlyginiai sakiniai, ciklai, kintamieji, funkcijos
 Palaikomi duomenų tipai: char, number, bool, array, struct, array
 Tipų tikrinimas: yra, sukuriant kintamąjį nustatomas jo tipas, kurio vėliau negalima keisti
 
-
-
+/
 
 Palaikomų kalbos konstrukcijų pavyzdžiai:
 
@@ -86,6 +84,7 @@ Array (liet. masyvas) yra kolekcija to pačio tipo, kur atmintis iš karto yra r
 Pavyzdžiui:
 int Grades[15];  
 
+/
 
 Unikali savybė:
 
