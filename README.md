@@ -3,6 +3,7 @@
 
 
 Komanda: 
+
 Karolis Žukauskas IFF-0/9
 
 Simas Markevičius IFF-0/9
@@ -12,12 +13,15 @@ Vilhelmas Stankevičius IFF-0/9
 
 
 Pasirinkti darbo įrankiai
+
 Kompiliatoriaus kalba: C++
+
 Kompiliatoriaus kompiliatorius: GCC
 
 
 
 Bendras kalbos aprašymas:
+
 Pavadinimas: FRePL (File Read Programming Language)
 Bendra kalbos idėja: Galima kodo nuskaityti kintamuosius tiesiai iš failo
 Palaikomos struktūros: sąlyginiai sakiniai, ciklai, kintamieji, funkcijos
@@ -28,6 +32,7 @@ Tipų tikrinimas: yra, sukuriant kintamąjį nustatomas jo tipas, kurio vėliau 
 
 
 Palaikomų kalbos konstrukcijų pavyzdžiai:
+
 Komentarai:
 	Vienos eilutės: // Čia yra vienos eilutės komentaras
 	Keleto eilučių:  /*  Čia yra keleto
