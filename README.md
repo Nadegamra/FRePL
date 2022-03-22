@@ -12,6 +12,7 @@ Vilhelmas Stankevičius IFF-0/9
 
 
 
+
 Pasirinkti darbo įrankiai
 
 Kompiliatoriaus kalba: C++
