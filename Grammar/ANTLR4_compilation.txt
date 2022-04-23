@@ -1,2 +1,0 @@
-1. Install antlr4 (aš pats tai padariau per chocolatey package manager)
-2. Terminal command: "antlr4 -visitor -Dlanguage=Cpp Grammar/FRePL.g4 -o ANTLR4"

@@ -1,0 +1,6 @@
+PRINT(9)
+PRINT("Hello, world!")
+PRINT(true)
+PRINT(6.9)
+PRINT('f')
+//PRINT('abc') // Should be invalid
