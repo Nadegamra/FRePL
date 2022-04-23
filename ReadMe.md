@@ -20,6 +20,6 @@ Build compiler with:
 
     mvn clean package
 
-Run jar with:
+Run compiler with:
 
     java -jar target/glang-1.0.jar code/test.frepl
