@@ -16,6 +16,8 @@ systemFunction
 | 'READ()'                  #readFunctionCall
 ;
 
+
+
 declaration
 : TYPE IDENTIFIER                    #declarationWithoutValue
 | TYPE IDENTIFIER '=' expression     #declarationWithValue
@@ -26,6 +28,7 @@ assignment : IDENTIFIER '=' expression;
 
 expression
 : constant                          #constantExpression
+| systemFunction                    #functionReturnExpression
 | IDENTIFIER                        #identifierExpression
 | '(' expression ')'                #parenthesisExpression
 | unNegOp expression                #unaryNegationExpression

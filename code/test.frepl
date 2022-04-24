@@ -26,3 +26,7 @@ c = c * 2
 PRINT(c)
 //c = "text" //Illegal because of type mismatch
 PRINT()
+
+PRINT("Enter some text")
+string text = READ() //returns string type text
+PRINT(text)

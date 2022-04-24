@@ -1,7 +1,10 @@
 package org.frepl.visitor;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
 
@@ -25,6 +28,27 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     @Override
     public Object visitPrintNewLine(FRePLParser.PrintNewLineContext ctx) {
         System.out.println();
+        return null;
+    }
+
+    @Override
+    public Object visitReadFunctionCall(FRePLParser.ReadFunctionCallContext ctx) {
+        BufferedReader reader  = new BufferedReader(
+                new InputStreamReader(System.in));
+        try{
+            String line = reader.readLine();
+            return line;
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Object visitFunctionReturnExpression(FRePLParser.FunctionReturnExpressionContext ctx) {
+        if(Objects.equals(ctx.systemFunction().getText(), "READ()")){
+            return visit(ctx.systemFunction());
+        }
         return null;
     }
 
