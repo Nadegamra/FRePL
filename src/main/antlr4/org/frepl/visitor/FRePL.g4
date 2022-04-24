@@ -11,6 +11,7 @@ statement
 
 systemFunction
 : 'PRINT(' expression ')'   #printFunctionCall
+| 'PRINT()'                 #printNewLine
 | 'READ()'                  #readFunctionCall
 ;
 
@@ -20,7 +21,21 @@ systemFunction
 //;
 
 
-expression: constant;
+expression
+: constant                          #constantExpression
+| '(' expression ')'                #parenthesisExpression
+| unNegOp expression                #unaryNegationExpression
+| expression binBoolOp expression   #binaryBooleanExpression
+| expression binMultOp expression   #binaryMultExpression
+| expression binAddOp expression    #binaryAddExpression
+| expression binCatOp expression    #binaryConcatExpression
+;
+
+unNegOp: '!';
+binBoolOp: '&&' | '||';
+binMultOp: '*' | '/' | '%';
+binAddOp: '+' | '-';
+binCatOp: '.';
 
 constant: INT | FLOAT | BOOLEAN | STRING | CHAR ;
 
