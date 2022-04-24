@@ -1,8 +1,12 @@
 package org.frepl.visitor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
 
     private final StringBuilder OUTPUT = new StringBuilder();
+    private final Map<String,Object> SymbolTable = new HashMap<>();
 
     @Override
     public Object visitProgram(FRePLParser.ProgramContext ctx) {
@@ -22,6 +26,79 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     public Object visitPrintNewLine(FRePLParser.PrintNewLineContext ctx) {
         System.out.println();
         return null;
+    }
+
+    @Override
+    public Object visitDeclarationWithoutValue(FRePLParser.DeclarationWithoutValueContext ctx) {
+        switch(ctx.TYPE().getText()){
+            case "int" -> SymbolTable.put(ctx.IDENTIFIER().getText(),0);
+            case "float" -> SymbolTable.put(ctx.IDENTIFIER().getText(),0.0);
+            case "boolean" -> SymbolTable.put(ctx.IDENTIFIER().getText(),false);
+            case "string" -> SymbolTable.put(ctx.IDENTIFIER().getText(),"");
+            case "char" -> SymbolTable.put(ctx.IDENTIFIER().getText(),' ');
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitDeclarationWithValue(FRePLParser.DeclarationWithValueContext ctx) {
+        if(SymbolTable.containsKey(ctx.IDENTIFIER().getText())){
+            throw new IllegalArgumentException("Variable name already taken");
+        }
+        Object value = visit(ctx.expression());
+        switch(ctx.TYPE().getText()){
+            case "int" -> {
+                if(value.getClass() == Integer.class) SymbolTable.put(ctx.IDENTIFIER().getText(),value);
+                else throw new IllegalArgumentException("Type mismatch");
+            }
+            case "float" -> {
+                if(value.getClass() == Float.class) SymbolTable.put(ctx.IDENTIFIER().getText(),value);
+                else throw new IllegalArgumentException("Type mismatch");
+            }
+            case "boolean" -> {
+                if(value.getClass() == Boolean.class) SymbolTable.put(ctx.IDENTIFIER().getText(),value);
+                else throw new IllegalArgumentException("Type mismatch");
+            }
+            case "string" -> {
+                if(value.getClass() == String.class) SymbolTable.put(ctx.IDENTIFIER().getText(),value);
+                else throw new IllegalArgumentException("Type mismatch");
+            }
+            case "char" -> {
+                if(value.getClass() == String.class && ((String) value).length() == 1) SymbolTable.put(ctx.IDENTIFIER().getText(),value);
+                else{
+                    System.out.println(value);
+                    throw new IllegalArgumentException("Type mismatch");
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitDeclarationImplicitType(FRePLParser.DeclarationImplicitTypeContext ctx) {
+        if(SymbolTable.containsKey(ctx.IDENTIFIER().getText())){
+            throw new IllegalArgumentException("Variable name already taken");
+        }
+        Object data = ctx.expression().getText();
+        SymbolTable.put(ctx.IDENTIFIER().getText(),visit(ctx.expression()));
+        return null;
+    }
+
+    @Override
+    public Object visitAssignment(FRePLParser.AssignmentContext ctx) {
+        Object currentValue = SymbolTable.get(ctx.IDENTIFIER().getText());
+        Object nextValue = visit(ctx.expression());
+
+        if(currentValue.getClass() != nextValue.getClass()){
+            throw new IllegalArgumentException("Attempted variable `" + ctx.IDENTIFIER().getText() + "` assignment to a different type");
+        }
+        SymbolTable.put(ctx.IDENTIFIER().getText(),nextValue);
+        return null;
+    }
+
+    @Override
+    public Object visitIdentifierExpression(FRePLParser.IdentifierExpressionContext ctx) {
+        return SymbolTable.get(ctx.IDENTIFIER().getText());
     }
 
     @Override
@@ -133,6 +210,10 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
         }
         if (ctx.CHAR() != null) {
             String text = ctx.CHAR().getText();
+            //TODO: Fix behaviour with special symbols for example \n
+            if(text.charAt(0) != '\'' || text.charAt(text.length()-1) != '\''){
+                throw new IllegalArgumentException("Invalid character");
+            }
             return text.substring(1,text.length()-1);
         }
         if(ctx.STRING() != null) {

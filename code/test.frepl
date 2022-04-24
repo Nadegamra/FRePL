@@ -12,3 +12,17 @@ PRINT(2+2*2)
 PRINT((2+2)*2%3)
 PRINT("ab"."cd")
 PRINT(2%0.5)
+PRINT()
+
+string a = "hello"
+PRINT(a)
+float b = 6.9
+PRINT(b)
+PRINT()
+
+var c = 5
+PRINT(c)
+c = c * 2
+PRINT(c)
+//c = "text" //Illegal because of type mismatch
+PRINT()

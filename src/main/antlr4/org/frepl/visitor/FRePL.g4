@@ -6,7 +6,8 @@ program
 
 statement
 : systemFunction
-//| declaration
+| declaration
+| assignment
 ;
 
 systemFunction
@@ -15,14 +16,17 @@ systemFunction
 | 'READ()'                  #readFunctionCall
 ;
 
-//declaration
-//: TYPE IDENTIFIER
-//| TYPE IDENTIFIER '=' expression
-//;
+declaration
+: TYPE IDENTIFIER                    #declarationWithoutValue
+| TYPE IDENTIFIER '=' expression     #declarationWithValue
+|'var' IDENTIFIER '=' expression     #declarationImplicitType
+;
 
+assignment : IDENTIFIER '=' expression;
 
 expression
 : constant                          #constantExpression
+| IDENTIFIER                        #identifierExpression
 | '(' expression ')'                #parenthesisExpression
 | unNegOp expression                #unaryNegationExpression
 | expression binBoolOp expression   #binaryBooleanExpression
