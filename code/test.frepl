@@ -34,12 +34,26 @@ PRINT()
     PRINT()
     c = 6
     {
-        c = 7
+        c = 5
     }
 }
 
 //PRINT(text) //Invalid because variable text is local to block
 PRINT(c)// Prints 7 because it was changed inside of block
+
+if(c>6) {
+    PRINT("If")
+    PRINT(c<=>7)//Spaceship operator
+}
+else if (c < 4)
+{
+    PRINT("Else if")
+    PRINT(c!=3)
+}
+else{
+PRINT("Else")
+PRINT(c<=5)
+}
 
 PRINT(1.41421356237**2)
 

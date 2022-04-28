@@ -9,7 +9,16 @@ statement
 | declaration
 | assignment
 | block
+| conditionalStatement
 ;
+
+conditionalStatement
+: ifStatement elseIfStatement* elseStatement?;
+
+ifStatement: 'if' '(' expression ')' block;
+elseIfStatement: 'else' 'if' '(' expression ')' block;
+elseStatement: 'else' block;
+
 
 block: '{' statement* '}';
 
@@ -40,6 +49,7 @@ expression
 | expression binMultOp expression   #binaryMultExpression
 | expression binAddOp expression    #binaryAddExpression
 | expression binCatOp expression    #binaryConcatExpression
+| expression binCompOp expression   #binaryComparisonExpression
 ;
 
 unNegOp: '!';
@@ -48,6 +58,7 @@ binPowOp: '**';
 binMultOp: '*' | '/' | '%';
 binAddOp: '+' | '-';
 binCatOp: '.';
+binCompOp: '<=' | '>' | '!=' | '==' | '<' | '>=' | '<=>';
 
 constant: INT | FLOAT | BOOLEAN | STRING | CHAR ;
 

@@ -50,6 +50,45 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitConditionalStatement(FRePLParser.ConditionalStatementContext ctx) {
+        visit(ctx.ifStatement());
+        for (var elseIf : ctx.elseIfStatement()) {
+            visit(elseIf);
+        }
+        if(ctx.elseStatement() != null){
+            visit(ctx.elseStatement());
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitIfStatement(FRePLParser.IfStatementContext ctx) {
+        Object value = visit(ctx.expression());
+        if(value.getClass() == Boolean.class){
+            if((Boolean)value){
+                visit(ctx.block());
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitElseIfStatement(FRePLParser.ElseIfStatementContext ctx) {
+        Object value = visit(ctx.expression());
+        if(value.getClass() == Boolean.class){
+            if((Boolean)value){
+                visit(ctx.block());
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitElseStatement(FRePLParser.ElseStatementContext ctx) {
+        return visit(ctx.block());
+    }
+
+    @Override
     public Object visitBlock(FRePLParser.BlockContext ctx) {
         SymbolTable.EnterBlock(true);
         for (var statement: ctx.statement()) {
@@ -250,6 +289,50 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
             };
         }
         return null;
+    }
+
+    @Override
+    public Object visitBinaryComparisonExpression(FRePLParser.BinaryComparisonExpressionContext ctx) {//TODO: Make comparisons more loose
+        Object val1 = visit(ctx.expression(0));
+        Object val2 = visit(ctx.expression(1));
+
+        if(val1.getClass() == val2.getClass()){
+            return switch (ctx.binCompOp().getText()){
+                case "!=" -> !(val1).equals(val2);
+                case "==" -> (val1).equals(val2);
+                default -> val1.getClass() == Integer.class ? switch (ctx.binCompOp().getText()) {
+                    case ">" -> (Integer) val1 > (Integer) val2;
+                    case ">=" -> (Integer) val1 >= (Integer) val2;
+                    case "<" -> (Integer) val1 < (Integer) val2;
+                    case "<=" -> (Integer) val1 <= (Integer) val2;
+                    case "<=>" -> ((Integer)val1).compareTo((Integer)val2);
+                    default -> null;
+                } : val1.getClass() == Float.class ? switch (ctx.binCompOp().getText()){
+                        case ">" -> (Float)val1 > (Float)val2;
+                        case ">=" -> (Float)val1 >= (Float)val2;
+                        case "<" -> (Float)val1 < (Float)val2;
+                        case "<=" -> (Float)val1 <= (Float)val2;
+                        case "<=>" -> ((Float)val1).compareTo((Float)val2);
+                        default -> null;
+                } : val1.getClass() == String.class ? switch (ctx.binCompOp().getText()){
+                    case ">" -> ((String)val1).compareTo((String)val2) > 0;
+                    case ">=" -> ((String)val1).compareTo((String)val2) >= 0;
+                    case "<" -> ((String)val1).compareTo((String)val2) < 0;
+                    case "<=" -> ((String)val1).compareTo((String)val2) <= 0;
+                    case "<=>" -> ((String)val1).compareTo((String)val2);
+                    default -> null;
+                } : val1.getClass() == Character.class ? switch (ctx.binCompOp().getText()){
+                    case ">" -> ((Character)val1).compareTo((Character)val2) > 0;
+                    case ">=" -> ((Character)val1).compareTo((Character)val2) >= 0;
+                    case "<" -> ((Character)val1).compareTo((Character)val2) < 0;
+                    case "<=" -> ((Character)val1).compareTo((Character)val2) <= 0;
+                    case "<=>" -> ((Character)val1).compareTo((Character)val2);
+                    default -> null;
+                } : null;
+            };
+        } else {
+            return null;
+        }
     }
 
     @Override
