@@ -8,7 +8,10 @@ statement
 : systemFunction
 | declaration
 | assignment
+| block
 ;
+
+block: '{' statement* '}';
 
 systemFunction
 : 'PRINT(' expression ')'   #printFunctionCall
@@ -33,6 +36,7 @@ expression
 | '(' expression ')'                #parenthesisExpression
 | unNegOp expression                #unaryNegationExpression
 | expression binBoolOp expression   #binaryBooleanExpression
+| expression binPowOp expression    #binaryPowerExpression
 | expression binMultOp expression   #binaryMultExpression
 | expression binAddOp expression    #binaryAddExpression
 | expression binCatOp expression    #binaryConcatExpression
@@ -40,6 +44,7 @@ expression
 
 unNegOp: '!';
 binBoolOp: '&&' | '||';
+binPowOp: '**';
 binMultOp: '*' | '/' | '%';
 binAddOp: '+' | '-';
 binCatOp: '.';

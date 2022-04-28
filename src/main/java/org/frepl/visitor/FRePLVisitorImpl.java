@@ -2,14 +2,12 @@ package org.frepl.visitor;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
 
     private final StringBuilder OUTPUT = new StringBuilder();
-    private final Map<String,Object> SymbolTable = new HashMap<>();
+    private final FRePLSymbolsTable SymbolTable = new FRePLSymbolsTable();
 
     @Override
     public Object visitProgram(FRePLParser.ProgramContext ctx) {
@@ -36,8 +34,7 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
         BufferedReader reader  = new BufferedReader(
                 new InputStreamReader(System.in));
         try{
-            String line = reader.readLine();
-            return line;
+            return reader.readLine();
         }catch (Exception ex){
             ex.printStackTrace();
             return null;
@@ -53,42 +50,52 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitBlock(FRePLParser.BlockContext ctx) {
+        SymbolTable.EnterBlock(true);
+        for (var statement: ctx.statement()) {
+            visit(statement);
+        }
+        SymbolTable.ExitBlock(true);
+        return null;
+    }
+
+    @Override
     public Object visitDeclarationWithoutValue(FRePLParser.DeclarationWithoutValueContext ctx) {
         switch(ctx.TYPE().getText()){
-            case "int" -> SymbolTable.put(ctx.IDENTIFIER().getText(),0);
-            case "float" -> SymbolTable.put(ctx.IDENTIFIER().getText(),0.0);
-            case "boolean" -> SymbolTable.put(ctx.IDENTIFIER().getText(),false);
-            case "string" -> SymbolTable.put(ctx.IDENTIFIER().getText(),"");
-            case "char" -> SymbolTable.put(ctx.IDENTIFIER().getText(),' ');
+            case "int" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),0);
+            case "float" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),0.0);
+            case "boolean" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),false);
+            case "string" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),"");
+            case "char" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),' ');
         }
         return null;
     }
 
     @Override
     public Object visitDeclarationWithValue(FRePLParser.DeclarationWithValueContext ctx) {
-        if(SymbolTable.containsKey(ctx.IDENTIFIER().getText())){
+        if(SymbolTable.currentTable.containsKey(ctx.IDENTIFIER().getText())){
             throw new IllegalArgumentException("Variable name already taken");
         }
         Object value = visit(ctx.expression());
         switch(ctx.TYPE().getText()){
             case "int" -> {
-                if(value.getClass() == Integer.class) SymbolTable.put(ctx.IDENTIFIER().getText(),value);
+                if(value.getClass() == Integer.class) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "float" -> {
-                if(value.getClass() == Float.class) SymbolTable.put(ctx.IDENTIFIER().getText(),value);
+                if(value.getClass() == Float.class) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "boolean" -> {
-                if(value.getClass() == Boolean.class) SymbolTable.put(ctx.IDENTIFIER().getText(),value);
+                if(value.getClass() == Boolean.class) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "string" -> {
-                if(value.getClass() == String.class) SymbolTable.put(ctx.IDENTIFIER().getText(),value);
+                if(value.getClass() == String.class) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "char" -> {
-                if(value.getClass() == String.class && ((String) value).length() == 1) SymbolTable.put(ctx.IDENTIFIER().getText(),value);
+                if(value.getClass() == String.class && ((String) value).length() == 1) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
                 else{
                     System.out.println(value);
                     throw new IllegalArgumentException("Type mismatch");
@@ -100,29 +107,29 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
 
     @Override
     public Object visitDeclarationImplicitType(FRePLParser.DeclarationImplicitTypeContext ctx) {
-        if(SymbolTable.containsKey(ctx.IDENTIFIER().getText())){
+        if(SymbolTable.currentTable.containsKey(ctx.IDENTIFIER().getText())){
             throw new IllegalArgumentException("Variable name already taken");
         }
         Object data = ctx.expression().getText();
-        SymbolTable.put(ctx.IDENTIFIER().getText(),visit(ctx.expression()));
+        SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),visit(ctx.expression()));
         return null;
     }
 
     @Override
     public Object visitAssignment(FRePLParser.AssignmentContext ctx) {
-        Object currentValue = SymbolTable.get(ctx.IDENTIFIER().getText());
+        Object currentValue = SymbolTable.currentTable.get(ctx.IDENTIFIER().getText());
         Object nextValue = visit(ctx.expression());
 
         if(currentValue.getClass() != nextValue.getClass()){
             throw new IllegalArgumentException("Attempted variable `" + ctx.IDENTIFIER().getText() + "` assignment to a different type");
         }
-        SymbolTable.put(ctx.IDENTIFIER().getText(),nextValue);
+        SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),nextValue);
         return null;
     }
 
     @Override
     public Object visitIdentifierExpression(FRePLParser.IdentifierExpressionContext ctx) {
-        return SymbolTable.get(ctx.IDENTIFIER().getText());
+        return SymbolTable.currentTable.get(ctx.IDENTIFIER().getText());
     }
 
     @Override
@@ -160,6 +167,30 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
             throw new IllegalArgumentException("! operator can only be used with `bool` data type");
         }
         return !value;
+    }
+
+    @Override
+    public Object visitBinaryPowerExpression(FRePLParser.BinaryPowerExpressionContext ctx) {
+        Object val1 = visit(ctx.expression(0));
+        Object val2 = visit(ctx.expression(1));
+
+        if(val1.getClass() == Integer.class && val2.getClass() == Integer.class){
+            float temp1 = (int)val1;
+            float temp2 = (int)val2;
+            return Math.pow(temp1,temp2);
+        }else if (val1.getClass() == Float.class && val2.getClass() == Float.class){
+            return Math.pow((Float)val1,(Float)val2);
+
+        }else if (val1.getClass() == Float.class && val2.getClass() == Integer.class){
+            float temp2 = (int)val2;
+            return Math.pow((Float)val1,temp2);
+
+        }
+        else if (val2.getClass() == Float.class && val1.getClass() == Integer.class){
+            float temp1 = (int)val1;
+            return Math.pow(temp1,(Float)val2);
+        }
+        return null;
     }
 
     @Override
@@ -246,10 +277,4 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
         }
         return null;
     }
-
-
-
-
-
-
 }

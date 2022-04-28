@@ -24,9 +24,22 @@ var c = 5
 PRINT(c)
 c = c * 2
 PRINT(c)
-//c = "text" //Illegal because of type mismatch
+//c = "text" //Invalid because of type mismatch
 PRINT()
 
-PRINT("Enter some text")
-string text = READ() //returns string type text
-PRINT(text)
+{
+    PRINT("Enter some text")
+    string text = READ() //returns string type text
+    PRINT(text)
+    PRINT()
+    c = 6
+    {
+        c = 7
+    }
+}
+
+//PRINT(text) //Invalid because variable text is local to block
+PRINT(c)// Prints 7 because it was changed inside of block
+
+PRINT(1.41421356237**2)
+
