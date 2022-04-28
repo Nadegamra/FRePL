@@ -5,9 +5,9 @@ program
 ;
 
 statement
-: systemFunction
-| declaration
-| assignment
+: systemFunction';'
+| declaration';'
+| assignment';'
 | block
 | conditionalStatement
 ;

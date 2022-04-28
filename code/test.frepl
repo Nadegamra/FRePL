@@ -1,59 +1,60 @@
-PRINT(9)
-PRINT("Hello, world!")
-PRINT(true)
-PRINT(6.9)
-PRINT('f')
+PRINT(9);
+PRINT("Hello, world!");
+PRINT(true);
+PRINT(6.9);
+PRINT('f');
 //PRINT('abc') // Should be invalid
-PRINT()
+PRINT();
 
-PRINT(!false && true)
-PRINT(!(false||false))
-PRINT(2+2*2)
-PRINT((2+2)*2%3)
-PRINT("ab"."cd")
-PRINT(2%0.5)
-PRINT()
+PRINT(!false && true);
+PRINT(!(false||false));
+PRINT(2+2*2);
+PRINT((2+2)*2%3);
+PRINT("ab"."cd");
+PRINT(2%0.5);
+PRINT();
 
-string a = "hello"
-PRINT(a)
-float b = 6.9
-PRINT(b)
-PRINT()
+string a = "hello";
+PRINT(a);
+float b = 6.9;
+PRINT(b);
+PRINT();
 
-var c = 5
-PRINT(c)
-c = c * 2
-PRINT(c)
+var c = 5;
+PRINT(c);
+c =
+    c * 2;
+PRINT(c);
 //c = "text" //Invalid because of type mismatch
-PRINT()
+PRINT();
 
-{
-    PRINT("Enter some text")
-    string text = READ() //returns string type text
-    PRINT(text)
-    PRINT()
-    c = 6
+{ //Standalone block
+    PRINT("Enter some text");
+    string text = READ(); //returns string type text
+    PRINT(text);
+    PRINT();
+    c = 6;
     {
-        c = 5
+        c = 5;
     }
 }
 
-//PRINT(text) //Invalid because variable text is local to block
-PRINT(c)// Prints 7 because it was changed inside of block
+//PRINT(text); //Invalid because variable text is local to block
+PRINT(c);// Prints 7 because it was changed inside of block
 
 if(c>6) {
-    PRINT("If")
-    PRINT(c<=>7)//Spaceship operator
+    PRINT("if");
+    PRINT(c<=>7);//Spaceship operator
 }
 else if (c < 4)
 {
-    PRINT("Else if")
-    PRINT(c!=3)
+    PRINT("else if");
+    PRINT(c!=3);
 }
 else{
-PRINT("Else")
-PRINT(c<=5)
+PRINT("else");
+PRINT(c<=5);
 }
 
-PRINT(1.41421356237**2)
+PRINT(1.41421356237**2);
 
