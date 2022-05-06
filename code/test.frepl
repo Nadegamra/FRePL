@@ -59,9 +59,9 @@ PRINT(c<=5);
 PRINT(1.41421356237**2);
 PRINT();
 
-int fileInt = fetch "code\DataFile.fdat" line 2 field 1 delimedBy "abc";
+int fileInt = fetch "code\DataFile.fdat" line 1 field 1 delimedBy "abc";
 PRINT(fileInt);
 string fileString = fetch "code\DataFile.fdat" line 1 field 3 delimedBy "abc";
 PRINT(fileString);
-float fileFloat = fetch "code\DataFile.fdat" line 2 field 3 delimedBy "abc";
+float fileFloat = fetch "code\DataFile.fdat" line 2 field 3 delimedBy ";;";
 PRINT(fileFloat);
