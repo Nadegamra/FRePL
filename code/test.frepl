@@ -39,7 +39,7 @@ PRINT();
     }
 }
 
-//PRINT(text); //Invalid because variable text is local to block
+//PRINT(text); //Invalid because variable text is local to the block
 PRINT(c);// Prints 7 because it was changed inside of block
 
 if(c>6) {
@@ -58,3 +58,5 @@ PRINT(c<=5);
 
 PRINT(1.41421356237**2);
 
+string fileVar = fetch "code\DataFile.fdat" line 2 field 1 delimedBy "abc";
+PRINT(fileVar);

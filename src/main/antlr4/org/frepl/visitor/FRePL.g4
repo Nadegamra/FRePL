@@ -26,6 +26,8 @@ systemFunction
 : 'PRINT(' expression ')'   #printFunctionCall
 | 'PRINT()'                 #printNewLine
 | 'READ()'                  #readFunctionCall
+| 'SAVE()'                  #saveFunctionCall
+| 'LOAD()'                  #loadFunctionCall
 ;
 
 
@@ -41,6 +43,7 @@ assignment : IDENTIFIER '=' expression;
 expression
 : constant                          #constantExpression
 | systemFunction                    #functionReturnExpression
+| fileVar                           #fileExpression
 | IDENTIFIER                        #identifierExpression
 | '(' expression ')'                #parenthesisExpression
 | unNegOp expression                #unaryNegationExpression
@@ -51,6 +54,8 @@ expression
 | expression binCatOp expression    #binaryConcatExpression
 | expression binCompOp expression   #binaryComparisonExpression
 ;
+
+fileVar: 'fetch' STRING 'line' INT 'field' INT 'delimedBy' STRING;
 
 unNegOp: '!';
 binBoolOp: '&&' | '||';
@@ -71,7 +76,6 @@ CHAR: ['] ( ~["\r\n\\] | '\\' ~[\r\n] ) ['];
 
 TYPE: 'int' | 'bool' | 'char' | 'string' | 'float' ;
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]* ;
-
 
 //SKIPPED
 COMMENT: ('//' ~[\r\n]* | '/*' .*? '*/') -> skip;

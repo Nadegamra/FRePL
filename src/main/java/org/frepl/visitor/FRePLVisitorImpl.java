@@ -1,7 +1,9 @@
 package org.frepl.visitor;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.util.Locale;
 import java.util.Objects;
 
 public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
@@ -117,6 +119,9 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
         }
         Object value = visit(ctx.expression());
         switch(ctx.TYPE().getText()){
+            case "string" -> {
+                SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value.toString());
+            }
             case "int" -> {
                 if(value.getClass() == Integer.class) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
                 else throw new IllegalArgumentException("Type mismatch");
@@ -127,10 +132,6 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
             }
             case "boolean" -> {
                 if(value.getClass() == Boolean.class) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
-                else throw new IllegalArgumentException("Type mismatch");
-            }
-            case "string" -> {
-                if(value.getClass() == String.class) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "char" -> {
@@ -359,5 +360,44 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
             return text.substring(1,text.length()-1);
         }
         return null;
+    }
+
+    @Override
+    public Object visitFileVar(FRePLParser.FileVarContext ctx) {
+        String filePath = ctx.STRING(0).getText();
+        filePath = filePath.substring(1,filePath.length()-1);
+        int lineNum = Integer.parseInt(ctx.INT(0).getText());
+        int fieldNum = Integer.parseInt(ctx.INT(1).getText());
+        String delimiter = ctx.STRING(1).getText();
+        delimiter = delimiter.substring(1,delimiter.length()-1);
+
+        String fullPath = System.getProperty("user.dir") + "\\" + filePath;
+        try(BufferedReader reader = new BufferedReader(new FileReader(filePath))){
+            while(lineNum-- > 1){
+                reader.readLine();
+            }
+            String line = reader.readLine();
+            String data = line.split(delimiter,-1)[fieldNum-1];
+            try {
+                return Integer.parseInt(data);
+            }catch (NumberFormatException ex1){
+                try{
+                    return Float.parseFloat(data);
+                }catch (NumberFormatException ex2){
+                    if(data.toLowerCase(Locale.ROOT).equals("true") || data.toLowerCase(Locale.ROOT).equals("false")){
+                        return Boolean.parseBoolean(data);
+                    }else{
+                        if(data.length() == 1){
+                            return data.charAt(0);
+                        }else{
+                            return data;
+                        }
+                    }
+                }
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
     }
 }
