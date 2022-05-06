@@ -43,7 +43,7 @@ assignment : IDENTIFIER '=' expression;
 expression
 : constant                          #constantExpression
 | systemFunction                    #functionReturnExpression
-| fileVar                           #fileExpression
+| ioResult                          #fileExpression
 | IDENTIFIER                        #identifierExpression
 | '(' expression ')'                #parenthesisExpression
 | unNegOp expression                #unaryNegationExpression
@@ -55,7 +55,11 @@ expression
 | expression binCompOp expression   #binaryComparisonExpression
 ;
 
-fileVar: 'fetch' STRING 'line' INT 'field' INT 'delimedBy' STRING;
+ioResult
+: 'fetch' STRING 'line' INT 'field' INT 'delimedBy' STRING      #fileVar
+| 'fetch' STRING 'line' INT                                     #fileLine
+| 'fetch' STRING                                                #fileText
+;
 
 unNegOp: '!';
 binBoolOp: '&&' | '||';

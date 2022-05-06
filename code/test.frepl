@@ -65,3 +65,12 @@ string fileString = fetch "code\DataFile.fdat" line 1 field 3 delimedBy "abc";
 PRINT(fileString);
 float fileFloat = fetch "code\DataFile.fdat" line 2 field 3 delimedBy ";;";
 PRINT(fileFloat);
+PRINT();
+
+string fileLine = fetch "code\DataFile.fdat" line 2;
+PRINT(fileLine);
+PRINT();
+
+string fileText = fetch "code\DataFile.fdat";
+PRINT(fileText);
+PRINT();

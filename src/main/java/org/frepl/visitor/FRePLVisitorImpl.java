@@ -3,6 +3,9 @@ package org.frepl.visitor;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -395,6 +398,38 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
                     }
                 }
             }
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Object visitFileLine(FRePLParser.FileLineContext ctx) {
+        String filePath = ctx.STRING().getText();
+        filePath = filePath.substring(1,filePath.length()-1);
+        int lineNum = Integer.parseInt(ctx.INT().getText());
+
+        String fullPath = System.getProperty("user.dir") + "\\" + filePath;
+        try(BufferedReader reader = new BufferedReader(new FileReader(filePath))){
+            while(lineNum-- > 1){
+                reader.readLine();
+            }
+            return reader.readLine();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public Object visitFileText(FRePLParser.FileTextContext ctx) {
+        String filePath = ctx.STRING().getText();
+        filePath = filePath.substring(1,filePath.length()-1);
+        String fullPath = System.getProperty("user.dir") + "\\" + filePath;
+        try {
+            byte[] bytes = Files.readAllBytes(Paths.get(fullPath));
+            return new String(bytes, StandardCharsets.UTF_8);
         }catch (Exception ex){
             ex.printStackTrace();
             return null;
