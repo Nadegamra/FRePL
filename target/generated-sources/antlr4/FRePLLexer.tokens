@@ -52,8 +52,8 @@ WHITESPACE=44
 'PRINT('=8
 'PRINT()'=9
 'READ()'=10
-'SAVE()'=11
-'LOAD()'=12
+'SAVE('=11
+'LOAD('=12
 '='=13
 'var'=14
 'fetch'=15

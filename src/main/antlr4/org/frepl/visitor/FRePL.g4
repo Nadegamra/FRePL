@@ -23,11 +23,11 @@ elseStatement: 'else' block;
 block: '{' statement* '}';
 
 systemFunction
-: 'PRINT(' expression ')'   #printFunctionCall
-| 'PRINT()'                 #printNewLine
-| 'READ()'                  #readFunctionCall
-| 'SAVE()'                  #saveFunctionCall
-| 'LOAD()'                  #loadFunctionCall
+: 'PRINT(' expression ')'       #printFunctionCall
+| 'PRINT()'                     #printNewLine
+| 'READ()'                      #readFunctionCall
+| 'SAVE(' STRING ')'            #saveFunctionCall
+| 'LOAD(' STRING ')' #loadFunctionCall
 ;
 
 

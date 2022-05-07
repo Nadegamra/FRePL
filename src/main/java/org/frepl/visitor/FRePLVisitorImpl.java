@@ -1,13 +1,15 @@
 package org.frepl.visitor;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
 
@@ -121,31 +123,34 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
             throw new IllegalArgumentException("Variable name already taken");
         }
         Object value = visit(ctx.expression());
-        switch(ctx.TYPE().getText()){
+        DeclareWithValue(ctx.IDENTIFIER().getText(),value,ctx.TYPE().getText());
+        return null;
+    }
+    private void DeclareWithValue(String key,Object value, String type){
+        switch(type){
             case "string" -> {
-                SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value.toString());
+                SymbolTable.currentTable.put(key,value.toString());
             }
             case "int" -> {
-                if(value.getClass() == Integer.class) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
+                if(value.getClass() == Integer.class) SymbolTable.currentTable.put(key,value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "float" -> {
-                if(value.getClass() == Float.class) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
+                if(value.getClass() == Float.class) SymbolTable.currentTable.put(key,value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "boolean" -> {
-                if(value.getClass() == Boolean.class) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
+                if(value.getClass() == Boolean.class) SymbolTable.currentTable.put(key,value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "char" -> {
-                if(value.getClass() == String.class && ((String) value).length() == 1) SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),value);
+                if(value.getClass() == String.class && ((String) value).length() == 1) SymbolTable.currentTable.put(key,value);
                 else{
                     System.out.println(value);
                     throw new IllegalArgumentException("Type mismatch");
                 }
             }
         }
-        return null;
     }
 
     @Override
@@ -434,5 +439,67 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public Object visitSaveFunctionCall(FRePLParser.SaveFunctionCallContext ctx) {
+        String filePath = ctx.STRING().getText();
+        filePath = filePath.substring(1,filePath.length()-1);
+        try(PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(filePath)))) {
+            for (var key:SymbolTable.currentTable.keySet()) {
+                Object value = SymbolTable.currentTable.get(key);
+                if(value.getClass() == String.class){
+                    String val = value.toString();
+                    val = val.replaceAll(System.lineSeparator(),"\\\\r\\\\n");
+                    writer.println("\"" + key + "\": \"" + val + "\";");
+                }else{
+                    writer.println("\"" + key + "\": \"" + value + "\";");
+                }
+
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitLoadFunctionCall(FRePLParser.LoadFunctionCallContext ctx) {//Currently overrides all current variables with same name. Might change this later
+        String filePath = ctx.STRING().getText();
+        filePath = filePath.substring(1,filePath.length()-1);
+        try{
+            String line;
+            byte[] bytes = Files.readAllBytes(Paths.get(filePath));
+            String text = new String(bytes, StandardCharsets.UTF_8);
+            List<String> matches = new ArrayList<>();
+            Matcher m = Pattern.compile("\".+?\": \".+?\";")
+                    .matcher(text);
+            while (m.find()){
+                String match = m.group();
+                String[] data = match.split("\": \"");
+                String varName = data[0].substring(1);
+                String varData = data[1].substring(0,data[1].length()-2);
+                try {
+                    SymbolTable.currentTable.put(varName, Integer.parseInt(varData));
+                }catch (NumberFormatException ex1){
+                    try{
+                        SymbolTable.currentTable.put(varName, Float.parseFloat(varData));
+                    }catch (NumberFormatException ex2){
+                        if(varData.toLowerCase(Locale.ROOT).equals("true") || varData.toLowerCase(Locale.ROOT).equals("false")){
+                            SymbolTable.currentTable.put(varName, Boolean.parseBoolean(varData));
+                        }else{
+                            if(varData.length() == 1){
+                                SymbolTable.currentTable.put(varName, varData.charAt(0));
+                            }else{
+                                SymbolTable.currentTable.put(varName, varData.replaceAll("\\\\r\\\\n",System.lineSeparator()));
+                            }
+                        }
+                    }
+                }
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+        return null;
     }
 }
