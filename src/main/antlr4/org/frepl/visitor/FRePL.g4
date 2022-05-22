@@ -30,6 +30,7 @@ systemFunction
 | 'Save(' STRING ')'            #saveFunctionCall
 | 'Load(' STRING ')'            #loadFunctionCall
 | IDENTIFIER'['INT']'           #arrayGetElement
+| IDENTIFIER'.length()'         #arrayGetLength
 | 'int.parse('(STRING | FLOAT | BOOLEAN)')'     #parseInt
 | 'float.parse('(STRING | INT | BOOLEAN)')'     #parseFloat
 | 'bool.parse('(STRING | FLOAT | INT)')'        #parseBool

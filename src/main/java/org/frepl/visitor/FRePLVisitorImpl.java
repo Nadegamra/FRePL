@@ -591,13 +591,23 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     public Object visitArrayGetElement(FRePLParser.ArrayGetElementContext ctx) {
         String identifier = ctx.IDENTIFIER().getText();
         var list = SymbolTable.currentTable.get(identifier);
-        int size = ((ArrayList)list).size();
         if(list.getClass() == ArrayList.class) {
+            int size = ((ArrayList)list).size();
             int index = Integer.parseInt(ctx.INT().getText());
             if(size <= index){
                 throw new IllegalArgumentException("Index " + index + " out of bounds for length " + size);
             }
             return ((ArrayList) list).get(index);
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitArrayGetLength(FRePLParser.ArrayGetLengthContext ctx) {
+        String identifier = ctx.IDENTIFIER().getText();
+        var list = SymbolTable.currentTable.get(identifier);
+        if(list.getClass() == ArrayList.class) {
+            return ((ArrayList)list).size();
         }
         return null;
     }
@@ -643,4 +653,6 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
         }
         return null;
     }
+
+
 }
