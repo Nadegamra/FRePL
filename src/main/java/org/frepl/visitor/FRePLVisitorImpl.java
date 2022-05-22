@@ -623,7 +623,7 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
         }
         if(ctx.INT() != null){
             return (float)Integer.parseInt(ctx.INT().getText());
-        }Integer.parseInt(ctx.INT().getText());
+        }
         if(ctx.BOOLEAN() != null){
             return Boolean.parseBoolean(ctx.BOOLEAN().getText()) ? 1.0 : 0.0;
         }
