@@ -29,6 +29,10 @@ systemFunction
 | 'Read()'                      #readFunctionCall
 | 'Save(' STRING ')'            #saveFunctionCall
 | 'Load(' STRING ')'            #loadFunctionCall
+| IDENTIFIER'['INT']'           #arrayGetElement
+| 'int.parse('(STRING | FLOAT | BOOLEAN)')'     #parseInt
+| 'float.parse('(STRING | INT | BOOLEAN)')'     #parseFloat
+| 'bool.parse('(STRING | FLOAT | INT)')'        #parseBool
 ;
 
 
@@ -43,6 +47,7 @@ assignment : IDENTIFIER '=' expression;
 
 expression
 : constant                          #constantExpression
+| constantArr                       #constantArrayExpression
 | systemFunction                    #functionReturnExpression
 | ioResult                          #fileExpression
 | IDENTIFIER                        #identifierExpression
@@ -70,6 +75,14 @@ binAddOp: '+' | '-';
 binCatOp: '.';
 binCompOp: '<=' | '>' | '!=' | '==' | '<' | '>=' | '<=>';
 
+constantArr
+: '['(INT)+']'
+| '['(FLOAT)+']'
+| '['(BOOLEAN)+']'
+| '['(STRING)+']'
+| '['(CHAR)+']'
+;
+
 constant: INT | FLOAT | BOOLEAN | STRING | CHAR ;
 
 // DATA TYPES
@@ -79,7 +92,8 @@ BOOLEAN: 'false' | 'true' ;
 STRING : ["] ( ~["\r\n\\] | '\\' ~[\r\n] )* ["] ;
 CHAR: ['] ( ~["\r\n\\] | '\\' ~[\r\n] ) ['];
 
-TYPE: 'int' | 'bool' | 'char' | 'string' | 'float' ;
+TYPE: 'int' | 'bool' | 'char' | 'string' | 'float'
+    | 'int[]' | 'bool[]' | 'char[]' | 'string[]' | 'float[]' ;
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]* ;
 
 //SKIPPED

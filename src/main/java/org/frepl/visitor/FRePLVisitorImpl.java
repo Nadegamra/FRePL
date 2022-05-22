@@ -116,6 +116,11 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
             case "boolean" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),false);
             case "string" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),"");
             case "char" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),' ');
+            case "int[]" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Integer>());
+            case "float[]" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Float>());
+            case "boolean[]" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Boolean>());
+            case "string[]" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<String>());
+            case "char[]" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Character>());
         }
         return null;
     }
@@ -152,6 +157,36 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
                     System.out.println(value);
                     throw new IllegalArgumentException("Type mismatch");
                 }
+            }
+            case "string[]" -> {
+                if(value.getClass() == (ArrayList.class)){
+                    SymbolTable.currentTable.put(key,value);
+                }
+                else throw new IllegalArgumentException("Type mismatch");
+            }
+            case "int[]" -> {
+                if(value.getClass() == (ArrayList.class)){
+                    SymbolTable.currentTable.put(key,value);
+                }
+                else throw new IllegalArgumentException("Type mismatch");
+            }
+            case "float[]" -> {
+                if(value.getClass() == (ArrayList.class)){
+                    SymbolTable.currentTable.put(key,value);
+                }
+                else throw new IllegalArgumentException("Type mismatch");
+            }
+            case "boolean[]" -> {
+                if(value.getClass() == (ArrayList.class)){
+                    SymbolTable.currentTable.put(key,value);
+                }
+                else throw new IllegalArgumentException("Type mismatch");
+            }
+            case "char[]" -> {
+                if(value.getClass() == (ArrayList.class)){
+                    SymbolTable.currentTable.put(key,value);
+                }
+                else throw new IllegalArgumentException("Type mismatch");
             }
         }
     }
@@ -348,6 +383,52 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitConstantArr(FRePLParser.ConstantArrContext ctx) {
+        if(ctx.INT() != null){
+            List<Integer> list = new ArrayList<>();
+            for (var val : ctx.INT()) {
+                list.add(Integer.parseInt(val.getText()));
+            }
+            return list;
+        }
+        if(ctx.FLOAT() != null){
+            List<Float> list = new ArrayList<>();
+            for (var val : ctx.FLOAT()) {
+                list.add(Float.parseFloat(val.getText()));
+            }
+            return list;
+        }
+        if(ctx.BOOLEAN() != null){
+            List<Boolean> list = new ArrayList<>();
+            for (var val : ctx.INT()) {
+                list.add(Boolean.parseBoolean(val.getText()));
+            }
+            return list;
+        }
+        if(ctx.CHAR() != null){
+            List<String> list = new ArrayList<>();
+            for (var val : ctx.CHAR()) {
+                String text = val.getText();
+                //TODO: Fix behaviour with special symbols for example \n
+                if(text.charAt(0) != '\'' || text.charAt(text.length()-1) != '\''){
+                    throw new IllegalArgumentException("Invalid character");
+                }
+                list.add(text.substring(1,text.length()-1));
+            }
+            return list;
+        }
+        if(ctx.STRING() != null){
+            List<String> list = new ArrayList<>();
+            for (var val : ctx.STRING()) {
+                String text = val.getText();
+                list.add(text.substring(1,text.length()-1));
+            }
+            return list;
+        }
+        return null;
+    }
+
+    @Override
     public Object visitConstant(FRePLParser.ConstantContext ctx) {
         if (ctx.INT() != null) {
             return Integer.parseInt(ctx.INT().getText());
@@ -502,6 +583,63 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
             }
         }catch (Exception ex){
             ex.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitArrayGetElement(FRePLParser.ArrayGetElementContext ctx) {
+        String identifier = ctx.IDENTIFIER().getText();
+        var list = SymbolTable.currentTable.get(identifier);
+        int size = ((ArrayList)list).size();
+        if(list.getClass() == ArrayList.class) {
+            int index = Integer.parseInt(ctx.INT().getText());
+            if(size <= index){
+                throw new IllegalArgumentException("Index " + index + " out of bounds for length " + size);
+            }
+            return ((ArrayList) list).get(index);
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitParseInt(FRePLParser.ParseIntContext ctx) {
+        if(ctx.STRING() != null){
+            return Integer.parseInt(ctx.STRING().getText().substring(1,ctx.STRING().getText().length()-1));
+        }
+        if(ctx.FLOAT() != null){
+            return (int)Float.parseFloat(ctx.FLOAT().getText());
+        }
+        if(ctx.BOOLEAN() != null){
+            return Boolean.parseBoolean(ctx.BOOLEAN().getText()) ? 1 : 0;
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitParseFloat(FRePLParser.ParseFloatContext ctx) {
+        if(ctx.STRING() != null){
+            return Float.parseFloat(ctx.STRING().getText().substring(1,ctx.STRING().getText().length()-1));
+        }
+        if(ctx.INT() != null){
+            return (float)Integer.parseInt(ctx.INT().getText());
+        }Integer.parseInt(ctx.INT().getText());
+        if(ctx.BOOLEAN() != null){
+            return Boolean.parseBoolean(ctx.BOOLEAN().getText()) ? 1.0 : 0.0;
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitParseBool(FRePLParser.ParseBoolContext ctx) {
+        if(ctx.STRING() != null){
+            return Boolean.parseBoolean(ctx.STRING().getText().substring(1,ctx.STRING().getText().length()-1));
+        }
+        if(ctx.FLOAT() != null){
+            return Float.parseFloat(ctx.FLOAT().getText()) != 0.0;
+        }
+        if(ctx.INT() != null){
+            return Integer.parseInt(ctx.INT().getText()) != 0;
         }
         return null;
     }
