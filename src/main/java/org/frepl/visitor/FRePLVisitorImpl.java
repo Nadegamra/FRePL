@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,14 +48,6 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitFunctionReturnExpression(FRePLParser.FunctionReturnExpressionContext ctx) {
-        if(Objects.equals(ctx.systemFunction().getText(), "READ()")){
-            return visit(ctx.systemFunction());
-        }
-        return null;
-    }
-
-    @Override
     public Object visitConditionalStatement(FRePLParser.ConditionalStatementContext ctx) {
         visit(ctx.ifStatement());
         for (var elseIf : ctx.elseIfStatement()) {
@@ -64,6 +55,18 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
         }
         if(ctx.elseStatement() != null){
             visit(ctx.elseStatement());
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitWhileLoop(FRePLParser.WhileLoopContext ctx) {
+        Object value = visit(ctx.expression());
+        if(value.getClass() == Boolean.class){
+            while((Boolean)value){
+                visit(ctx.block());
+                value = visit(ctx.expression());
+            }
         }
         return null;
     }

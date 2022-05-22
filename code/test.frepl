@@ -1,85 +1,99 @@
 {
-    PRINT(9);
-    PRINT("Hello, world!");
-    PRINT(true);
-    PRINT(6.9);
-    PRINT('f');
-    //PRINT('abc') // Should be invalid
-    PRINT();
+    Print(9);
+    Print("Hello, world!");
+    Print(true);
+    Print(6.9);
+    Print('f');
+    //Print('abc') // Should be invalid
+    Print();
 
-    PRINT(!false && true);
-    PRINT(!(false||false));
-    PRINT(2+2*2);
-    PRINT((2+2)*2%3);
-    PRINT("ab"."cd");
-    PRINT(2%0.5);
-    PRINT();
+    Print(!false && true);
+    Print(!(false||false));
+    Print(2+2*2);
+    Print((2+2)*2%3);
+    Print("ab"."cd");
+    Print(2%0.5);
+    Print();
 
     string a = "hello";
-    PRINT(a);
+    Print(a);
     float b = 6.9;
-    PRINT(b);
-    PRINT();
+    Print(b);
+    Print();
 
     var c = 5;
-    PRINT(c);
+    Print(c);
     c =
         c * 2;
-    PRINT(c);
+    Print(c);
     //c = "text" //Invalid because of type mismatch
-    PRINT();
+    Print();
 
     { //Standalone block
-        PRINT("Enter some text");
-        string text = READ(); //returns string type text
-        PRINT(text);
-        PRINT();
+        Print("Enter some text");
+        string text = Read(); //returns string type text
+        Print(text);
+        Print();
         c = 6;
         {
             c = 5;
         }
     }
 
-    //PRINT(text); //Invalid because variable text is local to the block
-    PRINT(c);// Prints 7 because it was changed inside of block
+    //Print(text); //Invalid because variable text is local to the block
+    Print(c);// Prints 7 because it was changed inside of block
 
     if(c>6) {
-        PRINT("if");
-        PRINT(c<=>7);//Spaceship operator
+        Print("if");
+        Print(c<=>7);//Spaceship operator
     }
     else if (c < 4)
     {
-        PRINT("else if");
-        PRINT(c!=3);
+        Print("else if");
+        Print(c!=3);
     }
     else{
-    PRINT("else");
-    PRINT(c<=5);
+    Print("else");
+    Print(c<=5);
     }
 
-    PRINT(1.41421356237**2);
-    PRINT();
+    Print(1.41421356237**2);
+    Print();
 
     int fileInt = fetch "code\DataFile.fdat" line 1 field 1 delimedBy "abc";
-    PRINT(fileInt);
+    Print(fileInt);
     string fileString = fetch "code\DataFile.fdat" line 1 field 3 delimedBy "abc";
-    PRINT(fileString);
+    Print(fileString);
     float fileFloat = fetch "code\DataFile.fdat" line 2 field 3 delimedBy ";;";
-    PRINT(fileFloat);
-    PRINT();
+    Print(fileFloat);
+    Print();
 
     string fileLine = fetch "code\DataFile.fdat" line 2;
-    PRINT(fileLine);
-    PRINT();
+    Print(fileLine);
+    Print();
 
     string fileText = fetch "code\DataFile.fdat";
-    PRINT(fileText);
-    PRINT();
+    Print(fileText);
+    Print();
 
-    SAVE("code\SavedData.fdat");
+    Save("code\SavedData.fdat");
 }
-SAVE("code\BeforeLoad.fdat");
-LOAD("code\SavedData.fdat");
-SAVE("code\AfterLoad.fdat");
-PRINT("After Load:");
-PRINT(fileText);
+Save("code\BeforeLoad.fdat");
+Load("code\SavedData.fdat");
+Save("code\AfterLoad.fdat");
+Print("After Load:");
+Print(fileText);
+
+Print("");
+Print("Program to print nth fibonacci:");
+int n = 10;
+int first = 1;
+int second = 1;
+Print(1);
+while(n > 0) {
+ int oldSecond = second;
+ second = second + first;
+ first = oldSecond;
+ Print(second);
+ n = n - 1;
+}

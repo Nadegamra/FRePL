@@ -10,6 +10,7 @@ statement
 | assignment';'
 | block
 | conditionalStatement
+| whileLoop
 ;
 
 conditionalStatement
@@ -19,15 +20,15 @@ ifStatement: 'if' '(' expression ')' block;
 elseIfStatement: 'else' 'if' '(' expression ')' block;
 elseStatement: 'else' block;
 
-
+whileLoop: 'while' '(' expression ')' block;
 block: '{' statement* '}';
 
 systemFunction
-: 'PRINT(' expression ')'       #printFunctionCall
-| 'PRINT()'                     #printNewLine
-| 'READ()'                      #readFunctionCall
-| 'SAVE(' STRING ')'            #saveFunctionCall
-| 'LOAD(' STRING ')' #loadFunctionCall
+: 'Print(' expression ')'       #printFunctionCall
+| 'Print()'                     #printNewLine
+| 'Read()'                      #readFunctionCall
+| 'Save(' STRING ')'            #saveFunctionCall
+| 'Load(' STRING ')'            #loadFunctionCall
 ;
 
 
