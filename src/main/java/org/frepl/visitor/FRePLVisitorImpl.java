@@ -12,6 +12,31 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     private final FRePLConditionalsVisitor conditionalsVisitor = new FRePLConditionalsVisitor(blockVisitor,expVisitor);
 
 
+
+    @Override
+    public Object visitArrayGetElement(FRePLParser.ArrayGetElementContext ctx) {
+        String identifier = ctx.IDENTIFIER().getText();
+        var list = varVisitor.SymbolTable.currentTable.get(identifier);
+        if(list.getClass() == ArrayList.class) {
+            int size = ((ArrayList)list).size();
+            int index = Integer.parseInt(ctx.INT().getText());
+            if(size <= index){
+                throw new IllegalArgumentException("Index " + index + " out of bounds for length " + size);
+            }
+            return ((ArrayList) list).get(index);
+        }
+        return null;
+    }
+    @Override
+    public Object visitArrayGetLength(FRePLParser.ArrayGetLengthContext ctx) {
+        String identifier = ctx.IDENTIFIER().getText();
+        var list = varVisitor.SymbolTable.currentTable.get(identifier);
+        if(list.getClass() == ArrayList.class) {
+            return ((ArrayList)list).size();
+        }
+        return null;
+    }
+
     @Override
     public Object visitPrintFunctionCall(FRePLParser.PrintFunctionCallContext ctx) {
         return consoleIOVisitor.visitPrintFunctionCall(ctx);
@@ -24,7 +49,6 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     public Object visitReadFunctionCall(FRePLParser.ReadFunctionCallContext ctx) {
         return consoleIOVisitor.visitReadFunctionCall(ctx);
     }
-
 
     @Override
     public Object visitWhileLoop(FRePLParser.WhileLoopContext ctx) {
@@ -50,31 +74,6 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     @Override
     public Object visitBlock(FRePLParser.BlockContext ctx) {
         return blockVisitor.visitBlock(ctx);
-    }
-
-    @Override
-    public Object visitArrayGetElement(FRePLParser.ArrayGetElementContext ctx) {
-        String identifier = ctx.IDENTIFIER().getText();
-        var list = varVisitor.SymbolTable.currentTable.get(identifier);
-        if(list.getClass() == ArrayList.class) {
-            int size = ((ArrayList)list).size();
-            int index = Integer.parseInt(ctx.INT().getText());
-            if(size <= index){
-                throw new IllegalArgumentException("Index " + index + " out of bounds for length " + size);
-            }
-            return ((ArrayList) list).get(index);
-        }
-        return null;
-    }
-
-    @Override
-    public Object visitArrayGetLength(FRePLParser.ArrayGetLengthContext ctx) {
-        String identifier = ctx.IDENTIFIER().getText();
-        var list = varVisitor.SymbolTable.currentTable.get(identifier);
-        if(list.getClass() == ArrayList.class) {
-            return ((ArrayList)list).size();
-        }
-        return null;
     }
 
     @Override
