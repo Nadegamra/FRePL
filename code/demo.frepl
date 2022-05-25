@@ -1,0 +1,30 @@
+{
+    int n = 10
+    Print("Program to print fibonacci #" . n . ":")
+
+    int first = 1
+    int second = 0
+    int fibonacciNo = 1
+    while(fibonacciNo < n) {
+         int oldSecond = second
+         second = second + first
+         first = oldSecond
+         Print("Fibonacci #" . fibonacciNo . " = " . second)
+         fibonacciNo = fibonacciNo + 1
+    }
+    Save("code/DemoData.fdat")
+}
+Print("Last Fibonacci: " . second)
+Load("code/DemoData.fdat")
+Print("Last Fibonacci: " . second)
+
+Print()
+int a = fetch "code\DataFile.fdat" line 2 field 2 delimedBy";;"
+Print(a)
+
+string data1 = Read()
+Print(int(data1))
+
+
+bool data2 = true
+Print(bool(int(!data2)))

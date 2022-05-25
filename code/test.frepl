@@ -100,12 +100,19 @@ while(n > 0) {
  n = n - 1;
 }
 
-Print();
-int[] arr = [1 2 3 4 5 6];
-Print(arr);
-Print("Array length: " . arr.length());
-Print("Array's 2nd element: " . arr[1]);
-Print();
-Print(int.parse(53.9));
-Print(float.parse("52.2"));
-Print(bool.parse(13));
+
+{
+    Print();
+    int[] arr = [1 2 3 4 5 6];
+    Print(arr);
+    Print("Array length: " . arr.length());
+    Print("Array's 2nd element: " . arr[1]);
+    Print();
+    Print(int.parse(53.9));
+    Print(float.parse("52.2"));
+    Print(bool.parse(13));
+    Save("code/WithArrays.fdat");
+    Print(arr);
+}
+Load("code/WithArrays.fdat");
+Print(arr[0] . " " . arr[1]);

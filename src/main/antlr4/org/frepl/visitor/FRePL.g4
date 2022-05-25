@@ -5,9 +5,9 @@ program
 ;
 
 statement
-: systemFunction';'
-| declaration';'
-| assignment';'
+: systemFunction
+| declaration
+| assignment
 | block
 | conditionalStatement
 | whileLoop
@@ -31,12 +31,12 @@ systemFunction
 | 'Load(' STRING ')'            #loadFunctionCall
 | IDENTIFIER'['INT']'           #arrayGetElement
 | IDENTIFIER'.length()'         #arrayGetLength
-| 'int.parse('(STRING | FLOAT | BOOLEAN)')'     #parseInt
-| 'float.parse('(STRING | INT | BOOLEAN)')'     #parseFloat
-| 'bool.parse('(STRING | FLOAT | INT)')'        #parseBool
+| 'int('    expression')'       #parseInt
+| 'float('  expression')'       #parseFloat
+| 'bool('   expression')'       #parseBool
+| 'char('   expression')'       #parseChar
+| 'string(' expression')'       #parseString
 ;
-
-
 
 declaration
 : TYPE IDENTIFIER                    #declarationWithoutValue
