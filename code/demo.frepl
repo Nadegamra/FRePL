@@ -15,7 +15,7 @@ void FibonacciTest(){
         }
         Save("code/DemoData.fdat")
     }
-    Print("Last Fibonacci: " . second)
+    //Print("Last Fibonacci: " . second)
     Load("code/DemoData.fdat")
     Print("Last Fibonacci: " . second)
 }
@@ -71,6 +71,19 @@ void fetchFeatureTest(){
     Print(a)
 }
 
+void tests(){
+    Print("Fibonacci iterative test")
+    FibonacciTest()
+    Print("Array operations test")
+    arrayTest()
+    Print("Casting test")
+    castingTest()
+    Print("Fetch feature test")
+    fetchFeatureTest()
+    Print("Return test")
+    returnTest()
+}
+
 int nthFibonacci(int n){
     if(n <= 2){
         return n
@@ -96,6 +109,6 @@ void demo(){
     printFibonacci(15)
 }
 
-demo()
-
+//demo()
+tests()
 
