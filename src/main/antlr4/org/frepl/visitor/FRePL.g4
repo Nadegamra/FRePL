@@ -11,7 +11,10 @@ statement
 | block
 | conditionalStatement
 | whileLoop
+| returnStatement
 ;
+
+returnStatement: 'return' expression? ;
 
 conditionalStatement
 : ifStatement elseIfStatement* elseStatement?;

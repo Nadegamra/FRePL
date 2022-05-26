@@ -1,3 +1,4 @@
+/*
 {
     int n = 10
     Print("Program to print fibonacci #" . n . ":")
@@ -27,4 +28,17 @@ Print(int(data1))
 
 
 bool data2 = true
-Print(bool(int(!data2)))
+Print(bool(string(!data2)))
+*/
+
+Print(1)
+if(true){
+   Print(2)
+   if(true){
+        Print(3)
+        return
+        Print(4)
+   }
+   Print(5)
+}
+Print(6)

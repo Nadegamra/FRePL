@@ -11,7 +11,10 @@ public class FRePLBlockVisitor extends FRePLBaseVisitor<Object> {
     public Object visitBlock(FRePLParser.BlockContext ctx) {
         varVisitor.SymbolTable.EnterBlock(true);
         for (var statement: ctx.statement()) {
-            mainVisitor.visit(statement);
+            Object result = mainVisitor.visit(statement);
+            if(result instanceof FRePLReturnObject){
+                return result;
+            }
         }
         varVisitor.SymbolTable.ExitBlock(true);
         return null;

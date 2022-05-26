@@ -1,4 +1,6 @@
 package org.frepl.visitor;
+import org.antlr.v4.runtime.tree.RuleNode;
+
 import java.util.ArrayList;
 
 public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
@@ -10,6 +12,7 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     private final FRePLFileIOVisitor fileIOVisitor = new FRePLFileIOVisitor(varVisitor);
     private final FRePLBlockVisitor blockVisitor = new FRePLBlockVisitor(varVisitor,this);
     private final FRePLConditionalsVisitor conditionalsVisitor = new FRePLConditionalsVisitor(blockVisitor,expVisitor);
+    private final FRePLFunctionsVisitor functionsVisitor = new FRePLFunctionsVisitor(expVisitor);
 
 
 
@@ -186,5 +189,21 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     @Override
     public Object visitConstant(FRePLParser.ConstantContext ctx) {
         return expVisitor.visitConstant(ctx);
+    }
+
+    @Override
+    public Object visitReturnStatement(FRePLParser.ReturnStatementContext ctx) {
+        return functionsVisitor.visitReturnStatement(ctx);
+    }
+
+    @Override
+    protected boolean shouldVisitNextChild(RuleNode node, Object currentResult) {
+        return functionsVisitor.shouldVisitNextChild(node, currentResult);
+    }
+
+    @Override
+    public Object visitStatement(FRePLParser.StatementContext ctx) {
+        Object result = super.visitStatement(ctx);
+        return result;
     }
 }

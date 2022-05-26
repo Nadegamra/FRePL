@@ -11,12 +11,21 @@ public class FRePLConditionalsVisitor extends FRePLBaseVisitor<Object> {
     }
     @Override
     public Object visitConditionalStatement(FRePLParser.ConditionalStatementContext ctx) {
-        expressionVisitor.visit(ctx.ifStatement());
+        Object result = visit(ctx.ifStatement());
+        if(result instanceof FRePLReturnObject){
+            return result;
+        }
         for (var elseIf : ctx.elseIfStatement()) {
-            visit(elseIf);
+            result = visit(elseIf);
+            if(result instanceof FRePLReturnObject){
+                return result;
+            }
         }
         if(ctx.elseStatement() != null){
-            visit(ctx.elseStatement());
+           result = visit(ctx.elseStatement());
+           if(result instanceof FRePLReturnObject){
+               return result;
+           }
         }
         return null;
     }
@@ -27,7 +36,10 @@ public class FRePLConditionalsVisitor extends FRePLBaseVisitor<Object> {
         Object value = expressionVisitor.visit(ctx.expression());
         if(value.getClass() == Boolean.class){
             if((Boolean)value){
-                blockVisitor.visit(ctx.block());
+                Object result = blockVisitor.visit(ctx.block());
+                if(result instanceof FRePLReturnObject){
+                    return result;
+                }
             }
         }
         return null;
@@ -38,7 +50,10 @@ public class FRePLConditionalsVisitor extends FRePLBaseVisitor<Object> {
         Object value = expressionVisitor.visit(ctx.expression());
         if(value.getClass() == Boolean.class){
             if((Boolean)value){
-                blockVisitor.visit(ctx.block());
+                Object result = blockVisitor.visit(ctx.block());
+                if(result instanceof FRePLReturnObject){
+                    return result;
+                }
             }
         }
         return null;
@@ -54,7 +69,10 @@ public class FRePLConditionalsVisitor extends FRePLBaseVisitor<Object> {
         Object value = expressionVisitor.visit(ctx.expression());
         if(value.getClass() == Boolean.class){
             while((Boolean)value){
-                blockVisitor.visit(ctx.block());
+                Object result = blockVisitor.visit(ctx.block());
+                if(result instanceof FRePLReturnObject){
+                    return result;
+                }
                 value = expressionVisitor.visit(ctx.expression());
             }
         }
