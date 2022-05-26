@@ -236,29 +236,34 @@ public class FRePLExpressionVisitor extends FRePLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitConstantArrayExpression(FRePLParser.ConstantArrayExpressionContext ctx) {
+        return visitConstantArr(ctx.constantArr());
+    }
+
+    @Override
     public Object visitConstantArr(FRePLParser.ConstantArrContext ctx) {
-        if(ctx.INT() != null){
+        if(ctx.INT().size() != 0){
             List<Integer> list = new ArrayList<>();
             for (var val : ctx.INT()) {
                 list.add(Integer.parseInt(val.getText()));
             }
             return list;
         }
-        if(ctx.FLOAT() != null){
+        if(ctx.FLOAT().size() != 0){
             List<Float> list = new ArrayList<>();
             for (var val : ctx.FLOAT()) {
                 list.add(Float.parseFloat(val.getText()));
             }
             return list;
         }
-        if(ctx.BOOLEAN() != null){
+        if(ctx.BOOLEAN().size() != 0){
             List<Boolean> list = new ArrayList<>();
             for (var val : ctx.INT()) {
                 list.add(Boolean.parseBoolean(val.getText()));
             }
             return list;
         }
-        if(ctx.CHAR() != null){
+        if(ctx.CHAR().size() != 0){
             List<String> list = new ArrayList<>();
             for (var val : ctx.CHAR()) {
                 String text = val.getText();
@@ -270,7 +275,7 @@ public class FRePLExpressionVisitor extends FRePLBaseVisitor<Object> {
             }
             return list;
         }
-        if(ctx.STRING() != null){
+        if(ctx.STRING().size() != 0){
             List<String> list = new ArrayList<>();
             for (var val : ctx.STRING()) {
                 String text = val.getText();

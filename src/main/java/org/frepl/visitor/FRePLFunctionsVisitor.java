@@ -60,7 +60,7 @@ public class FRePLFunctionsVisitor extends FRePLBaseVisitor<Object> {
                 FRePLParser.FunctionParameterContext parameter = parameters.get(i);
                 String expressionType = expressionVisitor.getExpressionType(result);
                 if(!expressionType.equals(parameter.TYPE().getText())){
-                    throw new IllegalCallerException("Argument type is invalid. Expected: " + parameter.TYPE().getText() +".Got: " + expressionType);
+                    throw new IllegalCallerException("Argument type is invalid. Expected: " + parameter.TYPE().getText() +", got: " + expressionType);
                 }
                 newTable.put(parameter.IDENTIFIER().getText(),result);
             }

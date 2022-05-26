@@ -60,30 +60,55 @@ public class FRePLVariablesVisitor extends FRePLBaseVisitor<Object> {
             }
             case "string[]" -> {
                 if(value instanceof ArrayList<?>){
+                    for(var element : (ArrayList<?>)value){
+                        if(!(element instanceof String)){
+                            throw new IllegalArgumentException("Type mismatch. Expected string, got:" + value.getClass().componentType()+"");
+                        }
+                    }
                     mainVisitor.SymbolTable.currentTable.put(key,value);
                 }
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "int[]" -> {
                 if(value instanceof ArrayList<?>){
+                    for(var element : (ArrayList<?>)value){
+                        if(!(element instanceof Integer)){
+                            throw new IllegalArgumentException("Type mismatch. Expected int, got:" + value.getClass().componentType()+"");
+                        }
+                    }
                     mainVisitor.SymbolTable.currentTable.put(key,value);
                 }
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "float[]" -> {
                 if(value instanceof ArrayList<?>){
+                    for(var element : (ArrayList<?>)value){
+                        if(!(element instanceof Float)){
+                            throw new IllegalArgumentException("Type mismatch. Expected float, got:" + value.getClass().componentType()+"");
+                        }
+                    }
                     mainVisitor.SymbolTable.currentTable.put(key,value);
                 }
-                else throw new IllegalArgumentException("Type mismatch");
+                else throw new IllegalArgumentException("Type mismatch. Expected float, got:" + value.getClass().componentType()+"[]");
             }
             case "bool[]" -> {
                 if(value instanceof ArrayList<?>){
+                    for(var element : (ArrayList<?>)value){
+                        if(!(element instanceof Boolean)){
+                            throw new IllegalArgumentException("Type mismatch. Expected bool, got:" + value.getClass().componentType()+"");
+                        }
+                    }
                     mainVisitor.SymbolTable.currentTable.put(key,value);
                 }
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "char[]" -> {
                 if(value instanceof ArrayList<?>){
+                    for(var element : (ArrayList<?>)value){
+                        if(!(element instanceof Character)){
+                            throw new IllegalArgumentException("Type mismatch. Expected char, got:" + value.getClass().componentType()+"");
+                        }
+                    }
                     mainVisitor.SymbolTable.currentTable.put(key,value);
                 }
                 else throw new IllegalArgumentException("Type mismatch");

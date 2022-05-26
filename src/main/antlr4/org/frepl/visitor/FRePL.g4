@@ -35,18 +35,19 @@ whileLoop: 'while' '(' expression ')' block;
 block: '{' statement* '}';
 
 systemFunction
-: 'Print(' expression ')'       #printFunctionCall
-| 'Print()'                     #printNewLine
-| 'Read()'                      #readFunctionCall
-| 'Save(' STRING ')'            #saveFunctionCall
-| 'Load(' STRING ')'            #loadFunctionCall
-| IDENTIFIER'['INT']'           #arrayGetElement
-| IDENTIFIER'.length()'         #arrayGetLength
-| 'int('    expression')'       #parseInt
-| 'float('  expression')'       #parseFloat
-| 'bool('   expression')'       #parseBool
-| 'char('   expression')'       #parseChar
-| 'string(' expression')'       #parseString
+: 'Print(' expression ')'                       #printFunctionCall
+| 'Print()'                                     #printNewLine
+| 'Read()'                                      #readFunctionCall
+| 'Save(' STRING ')'                            #saveFunctionCall
+| 'Load(' STRING ')'                            #loadFunctionCall
+| 'int('    expression')'                       #parseInt
+| 'float('  expression')'                       #parseFloat
+| 'bool('   expression')'                       #parseBool
+| 'char('   expression')'                       #parseChar
+| 'string(' expression')'                       #parseString
+| IDENTIFIER'.add('expression')'                #arrayAddElement
+| IDENTIFIER'.remove('expression')'             #arrayRemoveAtIndex
+| IDENTIFIER'['expression']' '=' expression     #arraySetElement
 ;
 
 declaration
@@ -72,6 +73,8 @@ expression
 | expression binCatOp expression    #binaryConcatExpression
 | expression binCompOp expression   #binaryComparisonExpression
 | functionCall                      #functionCallExpression
+| IDENTIFIER'['expression']'        #arrayGetElement
+| IDENTIFIER'.length()'             #arrayGetLength
 ;
 
 functionCall: IDENTIFIER'('functionArgumentList?')';

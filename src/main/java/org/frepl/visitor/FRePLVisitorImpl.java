@@ -15,29 +15,27 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     private final FRePLTypeParsingVisitor typeParser = new FRePLTypeParsingVisitor(this);
     private final FRePLConditionalsVisitor conditionalsVisitor = new FRePLConditionalsVisitor(this);
     private final FRePLFunctionsVisitor functionsVisitor = new FRePLFunctionsVisitor(this, expVisitor);
+    private final FRePLArrayOperationsVisitor arraysVisitor = new FRePLArrayOperationsVisitor(this);
 
     @Override
     public Object visitArrayGetElement(FRePLParser.ArrayGetElementContext ctx) {
-        String identifier = ctx.IDENTIFIER().getText();
-        var list = SymbolTable.currentTable.get(identifier);
-        if(list.getClass() == ArrayList.class) {
-            int size = ((ArrayList)list).size();
-            int index = Integer.parseInt(ctx.INT().getText());
-            if(size <= index){
-                throw new IllegalArgumentException("Index " + index + " out of bounds for length " + size);
-            }
-            return ((ArrayList) list).get(index);
-        }
-        return null;
+        return arraysVisitor.visitArrayGetElement(ctx);
     }
     @Override
     public Object visitArrayGetLength(FRePLParser.ArrayGetLengthContext ctx) {
-        String identifier = ctx.IDENTIFIER().getText();
-        var list = SymbolTable.currentTable.get(identifier);
-        if(list.getClass() == ArrayList.class) {
-            return ((ArrayList)list).size();
-        }
-        return null;
+        return arraysVisitor.visitArrayGetLength(ctx);
+    }
+    @Override
+    public Object visitArrayAddElement(FRePLParser.ArrayAddElementContext ctx) {
+        return arraysVisitor.visitArrayAddElement(ctx);
+    }
+    @Override
+    public Object visitArrayRemoveAtIndex(FRePLParser.ArrayRemoveAtIndexContext ctx) {
+        return arraysVisitor.visitArrayRemoveAtIndex(ctx);
+    }
+    @Override
+    public Object visitArraySetElement(FRePLParser.ArraySetElementContext ctx) {
+        return arraysVisitor.visitArraySetElement(ctx);
     }
 
     @Override

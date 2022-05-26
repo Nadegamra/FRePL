@@ -20,12 +20,20 @@ void FibonacciTest(){
     Print("Last Fibonacci: " . second)
 }
 
-void fetchFeatureTest(){
-    Print()
-    int a = fetch "code\DataFile.fdat" line 2 field 2 delimedBy";;"
-    Print(a)
-}
 
+
+void arrayTest(){
+    float[] floats = [1.2 2.9 1.8 5.1]
+    Print(floats[0])
+    floats[0] = 3.3
+    Print(floats[0])
+    Print(floats.length())
+    floats.add(6.9)
+    Print(floats)
+    Print(floats.length())
+    floats.remove(2)
+    Print(floats)
+}
 
 void castingTest(){
     string data1 = Read()
@@ -56,6 +64,13 @@ void funct(int a){
 }
 //funct(10)
 
+
+void fetchFeatureTest(){
+    Print()
+    int a = fetch "code\DataFile.fdat" line 2 field 2 delimedBy";;"
+    Print(a)
+}
+
 int nthFibonacci(int n){
     if(n <= 2){
         return n
@@ -72,13 +87,15 @@ void printFibonacci(int limit){
         fibonacciCounter = fibonacciCounter + 1
     }
 }
-Print("1st call")
-printFibonacci(10)
-Print("2nd call")
-printFibonacci(15)
 
+void demo(){
+    float c1 = 0.9
+    Print("1st call")
+    printFibonacci(int(10.2+c1))
+    Print("2nd call")
+    printFibonacci(15)
+}
 
-
-
+demo()
 
 
