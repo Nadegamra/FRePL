@@ -12,9 +12,19 @@ statement
 | conditionalStatement
 | whileLoop
 | returnStatement
+| functionDeclaration
+| functionCall
 ;
 
 returnStatement: 'return' expression? ;
+
+functionDeclaration: TYPE IDENTIFIER'(' parametersList? ')' functionBody;
+parametersList: functionParameter (','functionParameter)* ;
+functionParameter: TYPE IDENTIFIER;
+functionBody: '{' statement+'}' ;
+
+functionCall: IDENTIFIER'('functionArgumentList?')';
+functionArgumentList: expression (','expression)* ;
 
 conditionalStatement
 : ifStatement elseIfStatement* elseStatement?;
@@ -64,6 +74,7 @@ expression
 | expression binCatOp expression    #binaryConcatExpression
 | expression binCompOp expression   #binaryComparisonExpression
 ;
+
 
 ioResult
 : 'fetch' STRING 'line' INT 'field' INT 'delimedBy' STRING      #fileVar

@@ -1,3 +1,4 @@
+
 /*
 {
     int n = 10
@@ -29,7 +30,6 @@ Print(int(data1))
 
 bool data2 = true
 Print(bool(string(!data2)))
-*/
 
 Print(1)
 if(true){
@@ -42,3 +42,11 @@ if(true){
    Print(5)
 }
 Print(6)
+
+*/
+
+int funct(int a, float b){
+    return a + int(b)
+}
+
+funct(1,2.5)
