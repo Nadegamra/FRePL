@@ -20,8 +20,6 @@ void FibonacciTest(){
     Print("Last Fibonacci: " . second)
 }
 
-
-
 void arrayTest(){
     float[] floats = [1.2 2.9 1.8 5.1]
     Print(floats[0])
@@ -56,14 +54,12 @@ void returnTest(){
     Print(6)
 }
 
-void funct(int a){
+void recursionTest(int a){
     Print(a)
     if(a>0){
-        funct(a-1)
+        recursionTest(a-1)
     }
 }
-//funct(10)
-
 
 void fetchFeatureTest(){
     Print()
@@ -72,16 +68,18 @@ void fetchFeatureTest(){
 }
 
 void tests(){
-    Print("Fibonacci iterative test")
+    Print("Fibonacci iterative test:")
     FibonacciTest()
-    Print("Array operations test")
+    Print("Array operations test:")
     arrayTest()
-    Print("Casting test")
-    castingTest()
-    Print("Fetch feature test")
+    //Print("Casting test:")
+    //castingTest()
+    Print("Fetch feature test:")
     fetchFeatureTest()
-    Print("Return test")
+    Print("Return test:")
     returnTest()
+    Print("Recursion test:")
+    recursionTest(5)
 }
 
 int nthFibonacci(int n){
@@ -109,6 +107,6 @@ void demo(){
     printFibonacci(15)
 }
 
-//demo()
-tests()
+demo()
+//tests()
 
