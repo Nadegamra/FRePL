@@ -5,21 +5,21 @@ import java.util.ArrayList;
 
 public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
 
-    private final FRePLVariablesVisitor varVisitor = new FRePLVariablesVisitor();
-    private final FRePLExpressionVisitor expVisitor = new FRePLExpressionVisitor(varVisitor);
-    private final FRePLTypeParsingVisitor typeParser = new FRePLTypeParsingVisitor(expVisitor);
-    private final FRePLConsoleIOVisitor consoleIOVisitor = new FRePLConsoleIOVisitor(expVisitor);
-    private final FRePLFileIOVisitor fileIOVisitor = new FRePLFileIOVisitor(varVisitor);
-    private final FRePLBlockVisitor blockVisitor = new FRePLBlockVisitor(varVisitor,this);
-    private final FRePLConditionalsVisitor conditionalsVisitor = new FRePLConditionalsVisitor(blockVisitor,expVisitor);
-    private final FRePLFunctionsVisitor functionsVisitor = new FRePLFunctionsVisitor(expVisitor);
+    public FRePLSymbolsTable SymbolTable = new FRePLSymbolsTable();
 
-
+    private final FRePLConsoleIOVisitor consoleIOVisitor = new FRePLConsoleIOVisitor(this);
+    private final FRePLBlockVisitor blockVisitor = new FRePLBlockVisitor(this);
+    private final FRePLVariablesVisitor varVisitor = new FRePLVariablesVisitor(this);
+    private final FRePLFileIOVisitor fileIOVisitor = new FRePLFileIOVisitor(this);
+    private final FRePLExpressionVisitor expVisitor = new FRePLExpressionVisitor(this);
+    private final FRePLTypeParsingVisitor typeParser = new FRePLTypeParsingVisitor(this);
+    private final FRePLConditionalsVisitor conditionalsVisitor = new FRePLConditionalsVisitor(this);
+    private final FRePLFunctionsVisitor functionsVisitor = new FRePLFunctionsVisitor(this, expVisitor);
 
     @Override
     public Object visitArrayGetElement(FRePLParser.ArrayGetElementContext ctx) {
         String identifier = ctx.IDENTIFIER().getText();
-        var list = varVisitor.SymbolTable.currentTable.get(identifier);
+        var list = SymbolTable.currentTable.get(identifier);
         if(list.getClass() == ArrayList.class) {
             int size = ((ArrayList)list).size();
             int index = Integer.parseInt(ctx.INT().getText());
@@ -33,7 +33,7 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     @Override
     public Object visitArrayGetLength(FRePLParser.ArrayGetLengthContext ctx) {
         String identifier = ctx.IDENTIFIER().getText();
-        var list = varVisitor.SymbolTable.currentTable.get(identifier);
+        var list = SymbolTable.currentTable.get(identifier);
         if(list.getClass() == ArrayList.class) {
             return ((ArrayList)list).size();
         }
@@ -116,6 +116,14 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     public Object visitParseBool(FRePLParser.ParseBoolContext ctx) {
         return typeParser.visitParseBool(ctx);
     }
+    @Override
+    public Object visitParseChar(FRePLParser.ParseCharContext ctx) {
+        return typeParser.visitParseChar(ctx);
+    }
+    @Override
+    public Object visitParseString(FRePLParser.ParseStringContext ctx) {
+        return typeParser.visitParseString(ctx);
+    }
 
     @Override
     public Object visitDeclarationWithoutValue(FRePLParser.DeclarationWithoutValueContext ctx) {
@@ -195,10 +203,25 @@ public class FRePLVisitorImpl extends FRePLBaseVisitor<Object> {
     public Object visitReturnStatement(FRePLParser.ReturnStatementContext ctx) {
         return functionsVisitor.visitReturnStatement(ctx);
     }
-
     @Override
     protected boolean shouldVisitNextChild(RuleNode node, Object currentResult) {
         return functionsVisitor.shouldVisitNextChild(node, currentResult);
+    }
+    @Override
+    public Object visitFunctionDeclaration(FRePLParser.FunctionDeclarationContext ctx) {
+        return functionsVisitor.visitFunctionDeclaration(ctx);
+    }
+    @Override
+    public Object visitFunctionCallExpression(FRePLParser.FunctionCallExpressionContext ctx) {
+        return functionsVisitor.visitFunctionCallExpression(ctx);
+    }
+    @Override
+    public Object visitFunctionCall(FRePLParser.FunctionCallContext ctx) {
+        return functionsVisitor.visitFunctionCall(ctx);
+    }
+    @Override
+    public Object visitFunctionBody(FRePLParser.FunctionBodyContext ctx) {
+        return functionsVisitor.visitFunctionBody(ctx);
     }
 
     @Override

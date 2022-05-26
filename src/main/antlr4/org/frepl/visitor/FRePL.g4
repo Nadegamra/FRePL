@@ -8,12 +8,12 @@ statement
 : systemFunction
 | declaration
 | assignment
-| block
 | conditionalStatement
 | whileLoop
 | returnStatement
 | functionDeclaration
 | functionCall
+| block
 ;
 
 returnStatement: 'return' expression? ;
@@ -23,8 +23,6 @@ parametersList: functionParameter (','functionParameter)* ;
 functionParameter: TYPE IDENTIFIER;
 functionBody: '{' statement+'}' ;
 
-functionCall: IDENTIFIER'('functionArgumentList?')';
-functionArgumentList: expression (','expression)* ;
 
 conditionalStatement
 : ifStatement elseIfStatement* elseStatement?;
@@ -73,8 +71,11 @@ expression
 | expression binAddOp expression    #binaryAddExpression
 | expression binCatOp expression    #binaryConcatExpression
 | expression binCompOp expression   #binaryComparisonExpression
+| functionCall                      #functionCallExpression
 ;
 
+functionCall: IDENTIFIER'('functionArgumentList?')';
+functionArgumentList: expression (','expression)* ;
 
 ioResult
 : 'fetch' STRING 'line' INT 'field' INT 'delimedBy' STRING      #fileVar
@@ -107,7 +108,7 @@ BOOLEAN: 'false' | 'true' ;
 STRING : ["] ( ~["\r\n\\] | '\\' ~[\r\n] )* ["] ;
 CHAR: ['] ( ~["\r\n\\] | '\\' ~[\r\n] ) ['];
 
-TYPE: 'int' | 'bool' | 'char' | 'string' | 'float'
+TYPE: 'void' | 'int' | 'bool' | 'char' | 'string' | 'float'
     | 'int[]' | 'bool[]' | 'char[]' | 'string[]' | 'float[]' ;
 IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]* ;
 

@@ -1,22 +1,22 @@
 package org.frepl.visitor;
 
 public class FRePLBlockVisitor extends FRePLBaseVisitor<Object> {
-    private final FRePLVariablesVisitor varVisitor;
     private final FRePLVisitorImpl mainVisitor;
-    public FRePLBlockVisitor(FRePLVariablesVisitor variablesVisitor,FRePLVisitorImpl visitor){
-        varVisitor = variablesVisitor;
+    public FRePLBlockVisitor(FRePLVisitorImpl visitor){
         mainVisitor = visitor;
     }
+
+
     @Override
     public Object visitBlock(FRePLParser.BlockContext ctx) {
-        varVisitor.SymbolTable.EnterBlock(true);
+        mainVisitor.SymbolTable.EnterBlock(true);
         for (var statement: ctx.statement()) {
             Object result = mainVisitor.visit(statement);
             if(result instanceof FRePLReturnObject){
                 return result;
             }
         }
-        varVisitor.SymbolTable.ExitBlock(true);
+        mainVisitor.SymbolTable.ExitBlock(true);
         return null;
     }
 }

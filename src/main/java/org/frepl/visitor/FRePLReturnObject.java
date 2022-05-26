@@ -5,4 +5,7 @@ public class FRePLReturnObject {
     public FRePLReturnObject(Object value){
         this.value = value;
     }
+    public Object getValue(){
+        return value;
+    }
 }

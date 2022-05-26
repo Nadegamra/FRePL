@@ -12,10 +12,10 @@ import java.util.regex.Pattern;
 
 public class FRePLFileIOVisitor extends FRePLBaseVisitor<Object> {
 
-    private final FRePLVariablesVisitor varVisitor;
+    private final FRePLVisitorImpl mainVisitor;
 
-    public FRePLFileIOVisitor(FRePLVariablesVisitor variablesVisitor){
-        varVisitor = variablesVisitor;
+    public FRePLFileIOVisitor(FRePLVisitorImpl mainVisitor){
+        this.mainVisitor = mainVisitor;
     }
     @Override
     public Object visitFileVar(FRePLParser.FileVarContext ctx) {
@@ -93,8 +93,8 @@ public class FRePLFileIOVisitor extends FRePLBaseVisitor<Object> {
         String filePath = ctx.STRING().getText();
         filePath = filePath.substring(1,filePath.length()-1);
         try(PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(filePath)))) {
-            for (var key:varVisitor.SymbolTable.currentTable.keySet()) {
-                Object value = varVisitor.SymbolTable.currentTable.get(key);
+            for (var key:mainVisitor.SymbolTable.currentTable.keySet()) {
+                Object value = mainVisitor.SymbolTable.currentTable.get(key);
                 if(value.getClass() == String.class){
                     String val = value.toString();
                     val = val.replaceAll(System.lineSeparator(),"\\\\r\\\\n");
@@ -133,22 +133,22 @@ public class FRePLFileIOVisitor extends FRePLBaseVisitor<Object> {
                     for(var el : arrayData){
                         array.add((String)el.trim());
                     }
-                    varVisitor.SymbolTable.currentTable.put(varName, array);
+                    mainVisitor.SymbolTable.currentTable.put(varName, array);
                     return null;
                 }
                 try {
-                    varVisitor.SymbolTable.currentTable.put(varName, Integer.parseInt(varData));
+                    mainVisitor.SymbolTable.currentTable.put(varName, Integer.parseInt(varData));
                 } catch (NumberFormatException ex1) {
                     try {
-                        varVisitor.SymbolTable.currentTable.put(varName, Float.parseFloat(varData));
+                        mainVisitor.SymbolTable.currentTable.put(varName, Float.parseFloat(varData));
                     } catch (NumberFormatException ex2) {
                         if (varData.toLowerCase(Locale.ROOT).equals("true") || varData.toLowerCase(Locale.ROOT).equals("false")) {
-                            varVisitor.SymbolTable.currentTable.put(varName, Boolean.parseBoolean(varData));
+                            mainVisitor.SymbolTable.currentTable.put(varName, Boolean.parseBoolean(varData));
                         } else {
                             if (varData.length() == 1) {
-                                varVisitor.SymbolTable.currentTable.put(varName, varData.charAt(0));
+                                mainVisitor.SymbolTable.currentTable.put(varName, varData.charAt(0));
                             } else {
-                                varVisitor.SymbolTable.currentTable.put(varName, varData.replaceAll("\\\\r\\\\n", System.lineSeparator()));
+                                mainVisitor.SymbolTable.currentTable.put(varName, varData.replaceAll("\\\\r\\\\n", System.lineSeparator()));
                             }
                         }
                     }

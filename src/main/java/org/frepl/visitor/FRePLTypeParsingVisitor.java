@@ -1,18 +1,18 @@
 package org.frepl.visitor;
 
 public class FRePLTypeParsingVisitor extends FRePLBaseVisitor<Object> {
-    private final FRePLExpressionVisitor expVisitor;
-    public FRePLTypeParsingVisitor(FRePLExpressionVisitor expressionVisitor){
-        expVisitor = expressionVisitor;
+    private final FRePLVisitorImpl mainVisitor;
+    public FRePLTypeParsingVisitor(FRePLVisitorImpl mainVisitor){
+        this.mainVisitor = mainVisitor;
     }
     @Override
     public Object visitParseInt(FRePLParser.ParseIntContext ctx) {
-        Object value = expVisitor.visit(ctx.expression());
+        Object value = mainVisitor.visit(ctx.expression());
         if(value instanceof Integer){
-            return (Integer)value;
+            return ((Number)value).intValue();
         }
         if(value instanceof Float){
-            return (int)value;
+            return ((Number)value).intValue();
         }
         if(value instanceof Boolean){
             return ((Boolean)value) ? 1 : 0;
@@ -28,12 +28,12 @@ public class FRePLTypeParsingVisitor extends FRePLBaseVisitor<Object> {
 
     @Override
     public Object visitParseFloat(FRePLParser.ParseFloatContext ctx) {
-        Object value = expVisitor.visit(ctx.expression());
+        Object value = mainVisitor.visit(ctx.expression());
         if(value instanceof Integer){
-            return (float)value;
+            return ((Number)value).floatValue();
         }
         if(value instanceof Float){
-            return (Float)value;
+            return ((Number)value).floatValue();
         }
         if(value instanceof Boolean){
             return ((Boolean)value) ? 1.0 : 0.0;
@@ -49,7 +49,7 @@ public class FRePLTypeParsingVisitor extends FRePLBaseVisitor<Object> {
 
     @Override
     public Object visitParseBool(FRePLParser.ParseBoolContext ctx) {
-        Object value = expVisitor.visit(ctx.expression());
+        Object value = mainVisitor.visit(ctx.expression());
         if(value instanceof Integer){
             return (Integer)value != 0;
         }
@@ -67,7 +67,7 @@ public class FRePLTypeParsingVisitor extends FRePLBaseVisitor<Object> {
 
     @Override
     public Object visitParseChar(FRePLParser.ParseCharContext ctx) {
-        Object value = expVisitor.visit(ctx.expression());
+        Object value = mainVisitor.visit(ctx.expression());
         if(value instanceof Integer){
             return (char)value;
         }
@@ -85,7 +85,7 @@ public class FRePLTypeParsingVisitor extends FRePLBaseVisitor<Object> {
 
     @Override
     public Object visitParseString(FRePLParser.ParseStringContext ctx) {
-        Object value = expVisitor.visit(ctx.expression());
+        Object value = mainVisitor.visit(ctx.expression());
         return value.toString();
     }
 }

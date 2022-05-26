@@ -4,53 +4,55 @@ import java.util.ArrayList;
 
 public class FRePLVariablesVisitor extends FRePLBaseVisitor<Object> {
 
-    public final FRePLSymbolsTable SymbolTable = new FRePLSymbolsTable();
-    public final FRePLExpressionVisitor expVisitor = new FRePLExpressionVisitor(this);
+    private final FRePLVisitorImpl mainVisitor;
+    public FRePLVariablesVisitor(FRePLVisitorImpl mainVisitor){
+        this.mainVisitor = mainVisitor;
+    }
     @Override
     public Object visitDeclarationWithoutValue(FRePLParser.DeclarationWithoutValueContext ctx) {
         switch(ctx.TYPE().getText()){
-            case "int" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),0);
-            case "float" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),0.0);
-            case "boolean" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),false);
-            case "string" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),"");
-            case "char" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),' ');
-            case "int[]" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Integer>());
-            case "float[]" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Float>());
-            case "boolean[]" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Boolean>());
-            case "string[]" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<String>());
-            case "char[]" -> SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Character>());
+            case "int" -> mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),0);
+            case "float" -> mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),0.0);
+            case "boolean" -> mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),false);
+            case "string" -> mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),"");
+            case "char" -> mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),' ');
+            case "int[]" -> mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Integer>());
+            case "float[]" -> mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Float>());
+            case "boolean[]" -> mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Boolean>());
+            case "string[]" -> mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<String>());
+            case "char[]" -> mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),new ArrayList<Character>());
         }
         return null;
     }
 
     @Override
     public Object visitDeclarationWithValue(FRePLParser.DeclarationWithValueContext ctx) {
-        if(SymbolTable.currentTable.containsKey(ctx.IDENTIFIER().getText())){
+        if(mainVisitor.SymbolTable.currentTable.containsKey(ctx.IDENTIFIER().getText())){
             throw new IllegalArgumentException("Variable name already taken");
         }
-        Object value = expVisitor.visit(ctx.expression());
+        Object value = mainVisitor.visit(ctx.expression());
         DeclareWithValue(ctx.IDENTIFIER().getText(),value,ctx.TYPE().getText());
         return null;
     }
     private void DeclareWithValue(String key,Object value, String type){
         switch(type){
             case "string" -> {
-                SymbolTable.currentTable.put(key,value.toString());
+                mainVisitor.SymbolTable.currentTable.put(key,value.toString());
             }
             case "int" -> {
-                if(value instanceof Integer) SymbolTable.currentTable.put(key,value);
+                if(value instanceof Integer) mainVisitor.SymbolTable.currentTable.put(key,value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "float" -> {
-                if(value instanceof Float) SymbolTable.currentTable.put(key,value);
+                if(value instanceof Float) mainVisitor.SymbolTable.currentTable.put(key,value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "bool" -> {
-                if(value instanceof Boolean) SymbolTable.currentTable.put(key,value);
+                if(value instanceof Boolean) mainVisitor.SymbolTable.currentTable.put(key,value);
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "char" -> {
-                if(value instanceof String && ((String) value).length() == 1) SymbolTable.currentTable.put(key,value);
+                if(value instanceof String && ((String) value).length() == 1) mainVisitor.SymbolTable.currentTable.put(key,value);
                 else{
                     System.out.println(value);
                     throw new IllegalArgumentException("Type mismatch");
@@ -58,31 +60,31 @@ public class FRePLVariablesVisitor extends FRePLBaseVisitor<Object> {
             }
             case "string[]" -> {
                 if(value instanceof ArrayList<?>){
-                    SymbolTable.currentTable.put(key,value);
+                    mainVisitor.SymbolTable.currentTable.put(key,value);
                 }
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "int[]" -> {
                 if(value instanceof ArrayList<?>){
-                    SymbolTable.currentTable.put(key,value);
+                    mainVisitor.SymbolTable.currentTable.put(key,value);
                 }
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "float[]" -> {
                 if(value instanceof ArrayList<?>){
-                    SymbolTable.currentTable.put(key,value);
+                    mainVisitor.SymbolTable.currentTable.put(key,value);
                 }
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "bool[]" -> {
                 if(value instanceof ArrayList<?>){
-                    SymbolTable.currentTable.put(key,value);
+                    mainVisitor.SymbolTable.currentTable.put(key,value);
                 }
                 else throw new IllegalArgumentException("Type mismatch");
             }
             case "char[]" -> {
                 if(value instanceof ArrayList<?>){
-                    SymbolTable.currentTable.put(key,value);
+                    mainVisitor.SymbolTable.currentTable.put(key,value);
                 }
                 else throw new IllegalArgumentException("Type mismatch");
             }
@@ -91,23 +93,23 @@ public class FRePLVariablesVisitor extends FRePLBaseVisitor<Object> {
 
     @Override
     public Object visitDeclarationImplicitType(FRePLParser.DeclarationImplicitTypeContext ctx) {
-        if(SymbolTable.currentTable.containsKey(ctx.IDENTIFIER().getText())){
+        if(mainVisitor.SymbolTable.currentTable.containsKey(ctx.IDENTIFIER().getText())){
             throw new IllegalArgumentException("Variable name already taken");
         }
         Object data = ctx.expression().getText();
-        SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),expVisitor.visit(ctx.expression()));
+        mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),mainVisitor.visit(ctx.expression()));
         return null;
     }
 
     @Override
     public Object visitAssignment(FRePLParser.AssignmentContext ctx) {
-        Object currentValue = SymbolTable.currentTable.get(ctx.IDENTIFIER().getText());
-        Object nextValue = expVisitor.visit(ctx.expression());
+        Object currentValue = mainVisitor.SymbolTable.currentTable.get(ctx.IDENTIFIER().getText());
+        Object nextValue = mainVisitor.visit(ctx.expression());
 
         if(currentValue.getClass() != nextValue.getClass()){
             throw new IllegalArgumentException("Attempted variable `" + ctx.IDENTIFIER().getText() + "` assignment to a different type");
         }
-        SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),nextValue);
+        mainVisitor.SymbolTable.currentTable.put(ctx.IDENTIFIER().getText(),nextValue);
         return null;
     }
 

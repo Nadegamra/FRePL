@@ -4,14 +4,14 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class FRePLConsoleIOVisitor extends FRePLBaseVisitor<Object> {
-    private final FRePLExpressionVisitor expVisitor;
+    private final FRePLVisitorImpl mainVisitor;
 
-    public FRePLConsoleIOVisitor(FRePLExpressionVisitor expressionVisitor){
-        expVisitor = expressionVisitor;
+    public FRePLConsoleIOVisitor(FRePLVisitorImpl mainVisitor){
+        this.mainVisitor = mainVisitor;
     }
     @Override
     public Object visitPrintFunctionCall(FRePLParser.PrintFunctionCallContext ctx) {
-        String textToPrint = expVisitor.visit(ctx.expression()).toString();
+        String textToPrint = mainVisitor.visit(ctx.expression()).toString();
         System.out.println(textToPrint);
         return null;
     }

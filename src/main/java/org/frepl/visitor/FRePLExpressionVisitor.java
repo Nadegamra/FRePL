@@ -7,64 +7,63 @@ import java.util.List;
 import java.util.Locale;
 
 public class FRePLExpressionVisitor extends FRePLBaseVisitor<Object> {
-    private final FRePLVariablesVisitor varVisitor;
-    private final FRePLFileIOVisitor fileIOVisitor;
-    private final FRePLConsoleIOVisitor consoleIOVisitor;
-    private final FRePLTypeParsingVisitor typeParser;
-    public FRePLExpressionVisitor(FRePLVariablesVisitor variablesVisitor){
-        varVisitor = variablesVisitor;
-        fileIOVisitor = new FRePLFileIOVisitor(varVisitor);
-        consoleIOVisitor = new FRePLConsoleIOVisitor(this);
-        typeParser = new FRePLTypeParsingVisitor(this);
+    private final FRePLVisitorImpl mainVisitor;
+    public FRePLExpressionVisitor(FRePLVisitorImpl mainVisitor){
+        this.mainVisitor = mainVisitor;
+    }
+
+    @Override
+    public Object visitFunctionCallExpression(FRePLParser.FunctionCallExpressionContext ctx) {
+        return mainVisitor.visitFunctionCallExpression(ctx);
     }
 
     @Override
     public Object visitParseInt(FRePLParser.ParseIntContext ctx) {
-        return typeParser.visitParseInt(ctx);
+        return mainVisitor.visitParseInt(ctx);
     }
 
     @Override
     public Object visitParseFloat(FRePLParser.ParseFloatContext ctx) {
-        return typeParser.visitParseFloat(ctx);
+        return mainVisitor.visitParseFloat(ctx);
     }
 
     @Override
     public Object visitParseBool(FRePLParser.ParseBoolContext ctx) {
-        return typeParser.visitParseBool(ctx);
+        return mainVisitor.visitParseBool(ctx);
     }
 
     @Override
     public Object visitParseChar(FRePLParser.ParseCharContext ctx) {
-        return typeParser.visitParseChar(ctx);
+        return mainVisitor.visitParseChar(ctx);
     }
 
     @Override
     public Object visitParseString(FRePLParser.ParseStringContext ctx) {
-        return typeParser.visitParseString(ctx);
+        return mainVisitor.visitParseString(ctx);
     }
 
     @Override
     public Object visitReadFunctionCall(FRePLParser.ReadFunctionCallContext ctx) {
-        return consoleIOVisitor.visitReadFunctionCall(ctx);
+        return mainVisitor.visitReadFunctionCall(ctx);
     }
 
     @Override
     public Object visitIdentifierExpression(FRePLParser.IdentifierExpressionContext ctx) {
-        return varVisitor.SymbolTable.currentTable.get(ctx.IDENTIFIER().getText());
+        return mainVisitor.SymbolTable.currentTable.get(ctx.IDENTIFIER().getText());
     }
 
     @Override
     public Object visitBinaryConcatExpression(FRePLParser.BinaryConcatExpressionContext ctx) {
-        Object val1 = visit(ctx.expression(0));
-        Object val2 = visit(ctx.expression(1));
+        Object val1 = mainVisitor.visit(ctx.expression(0));
+        Object val2 = mainVisitor.visit(ctx.expression(1));
 
-        return (String)val1+val2;
+        return val1.toString()+val2.toString();
     }
 
     @Override
     public Object visitBinaryBooleanExpression(FRePLParser.BinaryBooleanExpressionContext ctx) {
-        Object val1 = visit(ctx.expression(0));
-        Object val2 = visit(ctx.expression(1));
+        Object val1 = mainVisitor.visit(ctx.expression(0));
+        Object val2 = mainVisitor.visit(ctx.expression(1));
         if(val1.getClass() == Boolean.class && val2.getClass() == Boolean.class) {
             return switch (ctx.binBoolOp().getText()) {
                 case "||" -> (boolean) val1 || (boolean) val2;
@@ -76,13 +75,18 @@ public class FRePLExpressionVisitor extends FRePLBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitFunctionCall(FRePLParser.FunctionCallContext ctx) {
+        return super.visitFunctionCall(ctx);
+    }
+
+    @Override
     public Object visitParenthesisExpression(FRePLParser.ParenthesisExpressionContext ctx) {
-        return visit(ctx.expression());
+        return mainVisitor.visit(ctx.expression());
     }
 
     @Override
     public Object visitUnaryNegationExpression(FRePLParser.UnaryNegationExpressionContext ctx) {
-        Object val1 = visit(ctx.expression());
+        Object val1 = mainVisitor.visit(ctx.expression());
         Boolean value = (Boolean)val1;
         if(value == null){
             throw new IllegalArgumentException("! operator can only be used with `bool` data type");
@@ -92,8 +96,8 @@ public class FRePLExpressionVisitor extends FRePLBaseVisitor<Object> {
 
     @Override
     public Object visitBinaryPowerExpression(FRePLParser.BinaryPowerExpressionContext ctx) {
-        Object val1 = visit(ctx.expression(0));
-        Object val2 = visit(ctx.expression(1));
+        Object val1 = mainVisitor.visit(ctx.expression(0));
+        Object val2 = mainVisitor.visit(ctx.expression(1));
 
         if(val1.getClass() == Integer.class && val2.getClass() == Integer.class){
             float temp1 = (int)val1;
@@ -116,8 +120,8 @@ public class FRePLExpressionVisitor extends FRePLBaseVisitor<Object> {
 
     @Override
     public Object visitBinaryMultExpression(FRePLParser.BinaryMultExpressionContext ctx) {
-        Object val1 = visit(ctx.expression(0));
-        Object val2 = visit(ctx.expression(1));
+        Object val1 = mainVisitor.visit(ctx.expression(0));
+        Object val2 = mainVisitor.visit(ctx.expression(1));
 
         if(val1.getClass() == Integer.class && val2.getClass() == Integer.class){
             return switch (ctx.binMultOp().getText()){
@@ -154,8 +158,8 @@ public class FRePLExpressionVisitor extends FRePLBaseVisitor<Object> {
 
     @Override
     public Object visitBinaryAddExpression(FRePLParser.BinaryAddExpressionContext ctx) {
-        Object val1 = visit(ctx.expression(0));
-        Object val2 = visit(ctx.expression(1));
+        Object val1 = mainVisitor.visit(ctx.expression(0));
+        Object val2 = mainVisitor.visit(ctx.expression(1));
 
         if(val1.getClass() == Integer.class && val2.getClass() == Integer.class){
             return switch (ctx.binAddOp().getText()){
@@ -175,45 +179,59 @@ public class FRePLExpressionVisitor extends FRePLBaseVisitor<Object> {
 
     @Override
     public Object visitBinaryComparisonExpression(FRePLParser.BinaryComparisonExpressionContext ctx) {//TODO: Make comparisons more loose
-        Object val1 = visit(ctx.expression(0));
-        Object val2 = visit(ctx.expression(1));
+        Object val1 = mainVisitor.visit(ctx.expression(0));
+        Object val2 = mainVisitor.visit(ctx.expression(1));
 
         if(val1.getClass() == val2.getClass()){
-            return switch (ctx.binCompOp().getText()){
-                case "!=" -> !(val1).equals(val2);
-                case "==" -> (val1).equals(val2);
-                default -> val1.getClass() == Integer.class ? switch (ctx.binCompOp().getText()) {
-                    case ">" -> (Integer) val1 > (Integer) val2;
-                    case ">=" -> (Integer) val1 >= (Integer) val2;
-                    case "<" -> (Integer) val1 < (Integer) val2;
-                    case "<=" -> (Integer) val1 <= (Integer) val2;
-                    case "<=>" -> ((Integer)val1).compareTo((Integer)val2);
-                    default -> null;
-                } : val1.getClass() == Float.class ? switch (ctx.binCompOp().getText()){
-                    case ">" -> (Float)val1 > (Float)val2;
-                    case ">=" -> (Float)val1 >= (Float)val2;
-                    case "<" -> (Float)val1 < (Float)val2;
-                    case "<=" -> (Float)val1 <= (Float)val2;
-                    case "<=>" -> ((Float)val1).compareTo((Float)val2);
-                    default -> null;
-                } : val1.getClass() == String.class ? switch (ctx.binCompOp().getText()){
-                    case ">" -> ((String)val1).compareTo((String)val2) > 0;
-                    case ">=" -> ((String)val1).compareTo((String)val2) >= 0;
-                    case "<" -> ((String)val1).compareTo((String)val2) < 0;
-                    case "<=" -> ((String)val1).compareTo((String)val2) <= 0;
-                    case "<=>" -> ((String)val1).compareTo((String)val2);
-                    default -> null;
-                } : val1.getClass() == Character.class ? switch (ctx.binCompOp().getText()){
-                    case ">" -> ((Character)val1).compareTo((Character)val2) > 0;
-                    case ">=" -> ((Character)val1).compareTo((Character)val2) >= 0;
-                    case "<" -> ((Character)val1).compareTo((Character)val2) < 0;
-                    case "<=" -> ((Character)val1).compareTo((Character)val2) <= 0;
-                    case "<=>" -> ((Character)val1).compareTo((Character)val2);
-                    default -> null;
-                } : null;
-            };
+            switch (ctx.binCompOp().getText()){
+                case "!=" : return !(val1).equals(val2);
+                case "==" : return (val1).equals(val2);
+                default: break;
+            }
+            if(val1 instanceof Integer){
+                switch (ctx.binCompOp().getText()){
+                    case ">" : return (Integer) val1 > (Integer) val2;
+                    case ">=" : return (Integer) val1 >= (Integer) val2;
+                    case "<" : return (Integer) val1 < (Integer) val2;
+                    case "<=" : return (Integer) val1 <= (Integer) val2;
+                    case "<=>" : return ((Integer)val1).compareTo((Integer)val2);
+                    default: break;
+                }
+            }
+            else if(val1 instanceof Float){
+                switch (ctx.binCompOp().getText()){
+                    case ">" : return (Float)val1 > (Float)val2;
+                    case ">=" : return (Float)val1 >= (Float)val2;
+                    case "<" : return (Float)val1 < (Float)val2;
+                    case "<=" : return (Float)val1 <= (Float)val2;
+                    case "<=>" : return ((Float)val1).compareTo((Float)val2);
+                    default: break;
+                }
+            }
+            else if(val1 instanceof String) {
+                switch (ctx.binCompOp().getText()){
+                    case ">" : return ((String)val1).compareTo((String)val2) > 0;
+                    case ">=" : return ((String)val1).compareTo((String)val2) >= 0;
+                    case "<" : return ((String)val1).compareTo((String)val2) < 0;
+                    case "<=" : return ((String)val1).compareTo((String)val2) <= 0;
+                    case "<=>" : return ((String)val1).compareTo((String)val2);
+                    default : break;
+                }
+
+            }
+            else if(val1 instanceof Character) {
+                switch (ctx.binCompOp().getText()){
+                    case ">" : return ((Character)val1).compareTo((Character)val2) > 0;
+                    case ">=" : return ((Character)val1).compareTo((Character)val2) >= 0;
+                    case "<" : return ((Character)val1).compareTo((Character)val2) < 0;
+                    case "<=" : return ((Character)val1).compareTo((Character)val2) <= 0;
+                    case "<=>" : return ((Character)val1).compareTo((Character)val2);
+                    default : break;
+                }
+            }
+            throw new IllegalArgumentException("Type not found");
         } else {
-            return null;
+            throw new IllegalArgumentException("Compared types do not match");
         }
     }
 
@@ -290,21 +308,41 @@ public class FRePLExpressionVisitor extends FRePLBaseVisitor<Object> {
     }
     @Override
     public Object visitFileExpression(FRePLParser.FileExpressionContext ctx) {
-        return fileIOVisitor.visitFileExpression(ctx);
+        return mainVisitor.visitFileExpression(ctx);
     }
 
     @Override
     public Object visitFileVar(FRePLParser.FileVarContext ctx) {
-        return fileIOVisitor.visitFileVar(ctx);
+        return mainVisitor.visitFileVar(ctx);
     }
 
     @Override
     public Object visitFileLine(FRePLParser.FileLineContext ctx) {
-        return fileIOVisitor.visitFileLine(ctx);
+        return mainVisitor.visitFileLine(ctx);
     }
 
     @Override
     public Object visitFileText(FRePLParser.FileTextContext ctx) {
-        return fileIOVisitor.visitFileText(ctx);
+        return mainVisitor.visitFileText(ctx);
     }
+
+    public String getExpressionType(Object value){
+        if(value instanceof Integer){
+            return "int";
+        }
+        if(value instanceof Float){
+            return "float";
+        }
+        if(value instanceof Boolean){
+            return "bool";
+        }
+        if(value instanceof Character){
+            return "char";
+        }
+        if(value instanceof String){
+            return "string";
+        }
+        return null;
+    }
+
 }
