@@ -7,7 +7,7 @@ Simple programing language created with ANTLR4 Visitor.
 
 > Apache Maven 3.8.5
 
-> IntelliJ IDEA Community Edition 2021.2.1
+> IntelliJ IDEA Community Edition 2022.1.1
 > - ANTLR v4 plugin
 
 #### Build
