@@ -22,4 +22,4 @@ Build compiler with:
 
 Run compiler with:
 
-    java -jar target/glang-1.0.jar code/test.frepl
+    java -jar target/glang-1.0.jar code/demo.frepl
